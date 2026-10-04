@@ -2,7 +2,7 @@
 <html lang="de" class="h-full">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>One thing at a time</title>
 
   <!-- Google Fonts: Plus Jakarta Sans -->
@@ -62,6 +62,11 @@
   <style>
     * {
       -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Verhindert automatisches Hereinzoomen auf iOS Safari bei Eingabefeldern */
+    input, textarea, select {
+      font-size: 16px !important;
     }
     
     ::-webkit-scrollbar {
