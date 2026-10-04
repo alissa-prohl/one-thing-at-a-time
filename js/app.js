@@ -157,6 +157,22 @@ class AppController {
   // =============================================================
 
   /**
+   * Klick auf das Eulen-Maskottchen auf der Startseite:
+   * Wählt direkt "Heute gemacht" aus.
+   * Falls noch kein Fokus gewählt ist, wird zum Gedanken-Parkplatz gewechselt.
+   */
+  handleOwlClick() {
+    if (!this.activeFocusId) {
+      this.navigate('ideas');
+      return;
+    }
+    const today = DateHelper.getTodayISO();
+    this.weekTracker.toggleFocusDate(today);
+    this.saveState();
+    this.renderAll();
+  }
+
+  /**
    * Klick auf den großen "Heute gemacht!"-Button auf der Startseite (Wochenfokus).
    */
   toggleToday() {

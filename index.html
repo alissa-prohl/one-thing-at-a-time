@@ -134,31 +134,49 @@
         
         <div class="relative z-10 flex flex-col items-center max-w-lg mx-auto">
           
-          <!-- Eulen-Maskottchen (Groß, transparentes PNG, farblos wenn nicht erledigt) -->
+          <!-- Eulen-Maskottchen (Groß, transparentes PNG, farblos wenn nicht erledigt, klickbar für 'Heute gemacht') -->
           <div class="relative w-64 h-64 sm:w-72 sm:h-72 md:w-80 md:h-80 mb-5 flex items-center justify-center">
-            <div id="home-owl-wrapper" class="relative w-full h-full animate-gentle-float select-none transition-all duration-500 flex items-center justify-center">
+            <div 
+              id="home-owl-wrapper" 
+              onclick="App.handleOwlClick()" 
+              title="Auf die Eule tippen, um 'Heute gemacht' auszuwählen"
+              class="relative w-full h-full animate-gentle-float select-none transition-all duration-500 flex items-center justify-center cursor-pointer group active:scale-95"
+            >
               <img 
                 id="home-owl-mascot"
                 src="owl.png" 
                 alt="Owl Mascot" 
-                class="w-full h-full object-contain select-none transition-all duration-500"
+                class="w-full h-full object-contain select-none transition-all duration-500 pointer-events-none"
               >
-              <!-- Feines botanisches Salbeiblatt-Overlay am rechten Feder-Ohr -->
+              <!-- Feines Blatt-Overlay am rechten Feder-Ohr (exakt nach Referenzbild) -->
               <div 
                 id="home-owl-leaf-badge" 
-                class="absolute top-[6%] right-[13%] w-14 h-14 sm:w-16 sm:h-16 pointer-events-none transition-all duration-500 owl-leaf-hidden"
+                class="absolute top-[6%] right-[11%] w-14 h-14 sm:w-16 sm:h-16 pointer-events-none transition-all duration-500 owl-leaf-hidden"
               >
-                <svg viewBox="0 0 64 64" fill="none" class="w-full h-full drop-shadow-sm">
-                  <!-- Stängel -->
-                  <path d="M12 52 C22 42, 34 30, 48 14" stroke="#567758" stroke-width="2.5" stroke-linecap="round"/>
-                  <!-- Unteres Blatt -->
-                  <path d="M24 40 C14 36, 12 24, 22 20 C30 22, 32 32, 24 40 Z" fill="#7E9F83" stroke="#466548" stroke-width="1.5" stroke-linejoin="round"/>
-                  <path d="M20 28 C24 30, 27 34, 26 38" stroke="#A8C4AA" stroke-width="1.2" stroke-linecap="round"/>
-                  <!-- Oberes Blatt -->
-                  <path d="M38 26 C36 14, 46 8, 54 14 C56 24, 46 30, 38 26 Z" fill="#6B8E6D" stroke="#466548" stroke-width="1.5" stroke-linejoin="round"/>
-                  <path d="M44 16 C45 20, 44 24, 40 26" stroke="#A8C4AA" stroke-width="1.2" stroke-linecap="round"/>
-                  <!-- Zarter Spitzentrieb -->
-                  <path d="M48 14 C50 10, 55 9, 57 12 C57 16, 52 17, 48 14 Z" fill="#8EAF93" stroke="#466548" stroke-width="1.2" stroke-linejoin="round"/>
+                <svg viewBox="0 0 100 100" fill="none" class="w-full h-full drop-shadow-md overflow-visible">
+                  <!-- Blatt-Körper mit kräftiger dunkler Kontur -->
+                  <path 
+                    d="M 22 20 C 44 10, 74 22, 88 48 C 96 64, 88 82, 74 85 C 50 90, 26 70, 22 20 Z" 
+                    fill="#52C439" 
+                    stroke="#18181B" 
+                    stroke-width="5" 
+                    stroke-linejoin="round" 
+                    stroke-linecap="round"
+                  />
+                  <!-- Hellgrüner Glanzstreifen am oberen Rand -->
+                  <path 
+                    d="M 25 22 C 42 15, 68 24, 82 46 C 74 38, 48 24, 25 22 Z" 
+                    fill="#98EB72" 
+                    opacity="0.95"
+                  />
+                  <!-- Stängel und Mittelrippe -->
+                  <path 
+                    d="M 92 98 C 88 88, 80 80, 74 72 C 64 58, 52 46, 40 34" 
+                    fill="none" 
+                    stroke="#18181B" 
+                    stroke-width="5" 
+                    stroke-linecap="round"
+                  />
                 </svg>
               </div>
             </div>

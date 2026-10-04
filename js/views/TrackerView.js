@@ -100,8 +100,8 @@ export class TrackerView {
         statusTextColor = 'text-brand-700';
       } else if (status === 'care') {
         itemBgClass = 'bg-[#F1F6F2] border-[#C3D9C7] shadow-sm';
-        statusText = 'Gut getan';
-        statusTextColor = 'text-[#4A6E55]';
+        statusText = 'Etwas anderes gemacht';
+        statusTextColor = 'text-[#3E7329]';
       }
 
       html += `
@@ -114,7 +114,7 @@ export class TrackerView {
             <div class="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-xs ${
               dayInfo.isToday 
                 ? 'bg-brand-500 text-white' 
-                : (status === 'care' ? 'bg-[#E3EFE5] text-[#3B5B44] border border-[#C3D9C7]' : 'bg-surface-subtle text-brand-700 border border-surface-border')
+                : (status === 'care' ? 'bg-[#E3EFE5] text-[#2F5F20] border border-[#C3D9C7]' : 'bg-surface-subtle text-brand-700 border border-surface-border')
             }">
               ${dayInfo.weekday}
             </div>
@@ -139,10 +139,12 @@ export class TrackerView {
                 <img src="owl.png" alt="Gemacht" class="w-9 h-9 object-contain select-none transform transition-transform group-hover:scale-110">
               ` : (status === 'care' ? `
                 <div class="relative w-9 h-9 flex items-center justify-center">
-                  <img src="owl.png" alt="Gut getan" class="w-full h-full object-contain select-none transform transition-transform group-hover:scale-110">
-                  <div class="absolute -top-1 -right-1 w-4 h-4 text-[#567758]">
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66l.95-2.3c.48.17.98.3 1.34.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z"/>
+                  <img src="owl.png" alt="Etwas anderes gemacht" class="w-full h-full object-contain select-none transform transition-transform group-hover:scale-110">
+                  <div class="absolute -top-1 -right-1 w-4 h-4 drop-shadow-sm">
+                    <svg viewBox="0 0 100 100" fill="none" class="w-full h-full overflow-visible">
+                      <path d="M 22 20 C 44 10, 74 22, 88 48 C 96 64, 88 82, 74 85 C 50 90, 26 70, 22 20 Z" fill="#52C439" stroke="#18181B" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>
+                      <path d="M 25 22 C 42 15, 68 24, 82 46 C 74 38, 48 24, 25 22 Z" fill="#98EB72"/>
+                      <path d="M 92 98 C 88 88, 80 80, 74 72 C 64 58, 52 46, 40 34" fill="none" stroke="#18181B" stroke-width="8" stroke-linecap="round"/>
                     </svg>
                   </div>
                 </div>
@@ -215,12 +217,14 @@ export class TrackerView {
               <div class="relative w-full h-full flex items-center justify-center">
                 <img 
                   src="owl.png" 
-                  alt="Gut getan" 
+                  alt="Etwas anderes gemacht" 
                   class="w-full h-full object-contain select-none transform transition-transform group-hover:scale-110"
                 >
-                <div class="absolute -top-1 -right-1 w-4 h-4 text-[#567758] drop-shadow-sm">
-                  <svg viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66l.95-2.3c.48.17.98.3 1.34.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z"/>
+                <div class="absolute -top-1.5 -right-1.5 w-4 h-4 sm:w-5 sm:h-5 drop-shadow-sm">
+                  <svg viewBox="0 0 100 100" fill="none" class="w-full h-full overflow-visible">
+                    <path d="M 22 20 C 44 10, 74 22, 88 48 C 96 64, 88 82, 74 85 C 50 90, 26 70, 22 20 Z" fill="#52C439" stroke="#18181B" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>
+                    <path d="M 25 22 C 42 15, 68 24, 82 46 C 74 38, 48 24, 25 22 Z" fill="#98EB72"/>
+                    <path d="M 92 98 C 88 88, 80 80, 74 72 C 64 58, 52 46, 40 34" fill="none" stroke="#18181B" stroke-width="8" stroke-linecap="round"/>
                   </svg>
                 </div>
               </div>
@@ -258,9 +262,13 @@ export class TrackerView {
                 <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
               </svg>
             ` : (status === 'care' ? `
-              <svg class="w-3 h-3 text-[#567758] inline" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66l.95-2.3c.48.17.98.3 1.34.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z"/>
-              </svg>
+              <div class="inline-flex items-center gap-0.5 text-[#3E7329]">
+                <div class="w-3 h-3 inline-block">
+                  <svg viewBox="0 0 100 100" fill="none" class="w-full h-full overflow-visible">
+                    <path d="M 22 20 C 44 10, 74 22, 88 48 C 96 64, 88 82, 74 85 C 50 90, 26 70, 22 20 Z" fill="#52C439" stroke="#18181B" stroke-width="9"/>
+                  </svg>
+                </div>
+              </div>
             ` : `
               <span class="inline-block text-[10px] font-medium text-slate-400">—</span>
             `))}

@@ -132,19 +132,23 @@ export class HomeView {
     if (!this.careBtn) return;
 
     if (todayStatus === 'care') {
-      this.careBtn.className = 'w-full py-3 sm:py-3.5 px-5 rounded-2xl font-bold text-xs sm:text-sm transition-all duration-300 bg-[#628B6E] hover:bg-[#53775C] text-white shadow-pill transform active:scale-95 flex items-center justify-center gap-2.5 cursor-pointer';
+      this.careBtn.className = 'w-full py-3 sm:py-3.5 px-5 rounded-2xl font-bold text-xs sm:text-sm transition-all duration-300 bg-[#48B031] hover:bg-[#3FA029] text-white shadow-pill transform active:scale-95 flex items-center justify-center gap-2.5 cursor-pointer';
       this.careBtn.innerHTML = `
-        <svg class="w-4 h-4 text-emerald-200" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
         </svg>
-        <span>Etwas anderes gut getan</span>
+        <span>Etwas anderes gemacht</span>
       `;
     } else {
-      this.careBtn.className = 'w-full py-3 sm:py-3.5 px-5 rounded-2xl font-bold text-xs sm:text-sm transition-all duration-300 bg-white/90 hover:bg-[#F2F7F3] text-slate-600 hover:text-[#4A6E55] border border-surface-border shadow-sm transform active:scale-95 flex items-center justify-center gap-2.5 cursor-pointer';
+      this.careBtn.className = 'w-full py-3 sm:py-3.5 px-5 rounded-2xl font-bold text-xs sm:text-sm transition-all duration-300 bg-white/90 hover:bg-[#F2F7F3] text-slate-600 hover:text-[#2E7A1C] border border-surface-border shadow-sm transform active:scale-95 flex items-center justify-center gap-2.5 cursor-pointer';
       this.careBtn.innerHTML = `
-        <svg class="w-4 h-4 text-[#7E9F83]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918"/>
-        </svg>
+        <div class="w-4 h-4 shrink-0">
+          <svg viewBox="0 0 100 100" fill="none" class="w-full h-full overflow-visible">
+            <path d="M 22 20 C 44 10, 74 22, 88 48 C 96 64, 88 82, 74 85 C 50 90, 26 70, 22 20 Z" fill="#52C439" stroke="#18181B" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>
+            <path d="M 25 22 C 42 15, 68 24, 82 46 C 74 38, 48 24, 25 22 Z" fill="#98EB72"/>
+            <path d="M 92 98 C 88 88, 80 80, 74 72 C 64 58, 52 46, 40 34" fill="none" stroke="#18181B" stroke-width="8" stroke-linecap="round"/>
+          </svg>
+        </div>
         <span>Etwas anderes gemacht, was mir gut getan hat!</span>
       `;
     }
