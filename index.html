@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="de" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>One thing at a time</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Farbschema nach Referenzbild: Weiches Lavendel (#ECE0F5) & sanftes Violett (#775BA4) -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#F8F4FC',
+              100: '#F1E8F8',
+              200: '#E6D7F3',
+              300: '#D7C2EC',
+              400: '#B99BD9',
+              500: '#775BA4', // Hauptakzent aus dem Referenzbild
+              600: '#674D90', // Hover
+              700: '#573F7B',
+              800: '#463264',
+              900: '#35254D',
+            },
+            surface: {
+              bg: '#ECE0F5',      // Echtes Flieder/Lavendel aus dem Referenz-Screenshot
+              card: '#FFFFFF',
+              subtle: '#F6EFFB',
+              border: '#E1D3ED',
+            }
+          },
+          boxShadow: {
+            'soft': '0 10px 30px -6px rgba(119, 91, 164, 0.12), 0 4px 12px -2px rgba(0, 0, 0, 0.03)',
+            'pill': '0 2px 8px rgba(119, 91, 164, 0.16)',
+          },
+          animation: {
+            'gentle-float': 'gentleFloat 3.8s ease-in-out infinite',
+          },
+          keyframes: {
+            gentleFloat: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-10px)' },
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    * {
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #ECE0F5;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #D7C2EC;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #775BA4;
+    }
+  </style>
+</head>
+
+<body class="h-full bg-surface-bg text-slate-700 font-sans antialiased flex flex-col selection:bg-brand-200 selection:text-brand-900">
+
+  <!-- ========================================== -->
+  <!-- KOPFZEILE & NAVIGATION                    -->
+  <!-- ========================================== -->
+  <header class="w-full max-w-4xl mx-auto px-4 sm:px-6 pt-5 pb-3">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      
+      <!-- Logo & Titel -->
+      <div class="flex items-center gap-2.5">
+        <div class="w-10 h-10 rounded-2xl bg-white shadow-soft flex items-center justify-center p-1.5 border border-surface-border">
+          <img src="owl.png" alt="Owl Mascot Logo" class="w-full h-full object-contain">
+        </div>
+        <h1 class="text-xl sm:text-2xl font-extrabold text-[#35254D] tracking-tight">
+          One thing at a time
+        </h1>
+      </div>
+
+      <!-- Navigation -->
+      <nav class="bg-white/90 backdrop-blur-sm p-1.5 rounded-2xl border border-surface-border shadow-soft flex items-center gap-1 self-start sm:self-auto">
+        <button id="nav-btn-home" onclick="App.navigate('home')" class="nav-tab px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 flex items-center gap-1.5 bg-brand-500 text-white shadow-pill">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+          </svg>
+          <span>Startseite</span>
+        </button>
+
+        <button id="nav-btn-ideas" onclick="App.navigate('ideas')" class="nav-tab px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 flex items-center gap-1.5 text-slate-600 hover:text-brand-700 hover:bg-brand-50">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+          </svg>
+          <span>Gedanken-Parkplatz</span>
+          <span id="badge-ideas-count" class="ml-1 text-[11px] font-bold px-2 py-0.5 rounded-full bg-brand-100 text-brand-700">0</span>
+        </button>
+
+        <button id="nav-btn-tracker" onclick="App.navigate('tracker')" class="nav-tab px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 flex items-center gap-1.5 text-slate-600 hover:text-brand-700 hover:bg-brand-50">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          </svg>
+          <span>Wochen-Tracker</span>
+        </button>
+      </nav>
+
+    </div>
+  </header>
+
+  <!-- ========================================== -->
+  <!-- HAUPTINHALT                                -->
+  <!-- ========================================== -->
+  <main class="flex-1 w-full max-w-4xl mx-auto px-4 sm:px-6 py-3 flex flex-col justify-center">
+
+    <!-- ========================================== -->
+    <!-- BEREICH 1: STARTSEITE                      -->
+    <!-- ========================================== -->
+    <section id="section-home" class="w-full">
+      <div class="bg-white rounded-3xl p-6 sm:p-12 shadow-soft border border-surface-border text-center relative overflow-hidden">
+        
+        <div class="relative z-10 flex flex-col items-center max-w-lg mx-auto">
+          
+          <!-- Eulen-Maskottchen (Groß, transparentes PNG, farblos wenn nicht erledigt) -->
+          <div class="relative w-64 h-64 sm:w-72 sm:h-72 md:w-80 md:h-80 mb-5 flex items-center justify-center">
+            <img 
+              id="home-owl-mascot"
+              src="owl.png" 
+              alt="Owl Mascot" 
+              class="w-full h-full object-contain animate-gentle-float select-none transition-all duration-500"
+            >
+          </div>
+
+          <!-- Fokus-Titel direkt unter der Eule (Keine Kommentare) -->
+          <div class="mb-8">
+            <h2 id="home-quote-text" class="text-2xl sm:text-3xl font-extrabold text-[#35254D] tracking-tight leading-snug">
+              Jeden Abend Kena Bridge of Spirits spielen
+            </h2>
+          </div>
+
+          <!-- Heute gemacht Button -->
+          <div class="w-full max-w-xs">
+            <button 
+              id="btn-toggle-today" 
+              onclick="App.toggleToday()" 
+              class="w-full py-4 px-6 rounded-2xl font-bold text-base sm:text-lg transition-all duration-300 transform active:scale-95 flex items-center justify-center gap-3"
+            >
+              <!-- Dynamischer Inhalt via JavaScript -->
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- BEREICH 2: GEDANKEN-PARKPLATZ              -->
+    <!-- ========================================== -->
+    <section id="section-ideas" class="hidden space-y-4">
+      <div class="bg-white rounded-3xl p-5 sm:p-8 shadow-soft border border-surface-border space-y-5">
+        
+        <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+          <h2 class="text-xl sm:text-2xl font-extrabold text-[#35254D] tracking-tight">
+            Gedanken-Parkplatz
+          </h2>
+          <span id="ideas-stat-total" class="text-xs font-bold text-brand-700 bg-surface-subtle border border-surface-border px-3 py-1 rounded-full">
+            0 Ideen
+          </span>
+        </div>
+
+        <!-- Schnell-Eingabe -->
+        <form id="form-quick-add" onsubmit="App.handleQuickAdd(event)" class="flex flex-col sm:flex-row gap-2.5">
+          <input 
+            type="text" 
+            id="input-quick-title"
+            placeholder="Neue Idee oder Projekt notieren..."
+            class="flex-1 bg-surface-subtle border border-surface-border rounded-2xl px-4 py-3 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all"
+            required
+            autocomplete="off"
+          >
+          <button 
+            type="submit" 
+            class="bg-brand-500 hover:bg-brand-600 text-white font-bold text-sm px-6 py-3 rounded-2xl shadow-pill transition-all duration-200 flex items-center justify-center gap-2 whitespace-nowrap active:scale-95"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+            </svg>
+            <span>Parken</span>
+          </button>
+        </form>
+
+        <!-- Liste -->
+        <div id="ideas-list-container" class="space-y-2.5">
+          <!-- Dynamischer Inhalt -->
+        </div>
+
+        <div id="ideas-empty-state" class="hidden py-8 text-center space-y-3">
+          <div class="w-16 h-16 mx-auto rounded-3xl bg-surface-subtle border border-surface-border flex items-center justify-center p-3">
+            <img src="owl.png" alt="Eule" class="w-full h-full object-contain opacity-70">
+          </div>
+          <h3 class="text-base font-bold text-slate-700">Dein Gedanken-Parkplatz ist leer</h3>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- BEREICH 3: WOCHEN-TRACKER                  -->
+    <!-- ========================================== -->
+    <section id="section-tracker" class="hidden space-y-4">
+      <div class="bg-white rounded-3xl p-4 sm:p-8 shadow-soft border border-surface-border space-y-5">
+        
+        <!-- Header mit Fokus-Titel & flexibler, ästhetischer Wochen-Navigation -->
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3.5 border-b border-slate-100 pb-4">
+          <div>
+            <h2 id="tracker-focus-headline" class="text-lg sm:text-2xl font-extrabold text-[#35254D] tracking-tight">
+              Fokus der Woche: Jeden Abend Kena Bridge of Spirits spielen
+            </h2>
+          </div>
+
+          <!-- Wochen- & Startdatum-Steuerung (Schlank, ruhig, ohne Überladung) -->
+          <div class="flex items-center gap-2 self-start lg:self-auto flex-wrap sm:flex-nowrap">
+            
+            <div class="flex items-center gap-1 bg-surface-subtle p-1.5 rounded-2xl border border-surface-border">
+              <!-- Woche zurück -->
+              <button 
+                onclick="App.shiftStartDate(-7)" 
+                title="Vorherige Woche" 
+                class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-white hover:bg-brand-50 text-slate-700 flex items-center justify-center shadow-sm border border-surface-border transition-colors"
+              >
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+                </svg>
+              </button>
+
+              <!-- Klickbarer Datumsbereich: Öffnet den Mini-Kalender -->
+              <button 
+                onclick="App.openCalendarModal()"
+                title="Startdatum frei wählen"
+                class="px-2.5 sm:px-3 py-1 text-xs font-bold text-brand-700 hover:text-brand-900 bg-white rounded-xl shadow-sm border border-surface-border hover:bg-brand-50 flex items-center gap-1.5 transition-colors"
+              >
+                <svg class="w-3.5 h-3.5 text-brand-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+                <span id="tracker-week-range-label">4. Okt – 10. Okt</span>
+              </button>
+
+              <!-- Woche vor -->
+              <button 
+                onclick="App.shiftStartDate(7)" 
+                title="Nächste Woche" 
+                class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-white hover:bg-brand-50 text-slate-700 flex items-center justify-center shadow-sm border border-surface-border transition-colors"
+              >
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                </svg>
+              </button>
+
+              <!-- Heute-Button -->
+              <button 
+                onclick="App.setStartDateToToday()" 
+                title="Auf heute setzen"
+                class="px-2.5 py-1 rounded-xl bg-brand-500 text-white text-xs font-bold shadow-sm hover:bg-brand-600 transition-colors"
+              >
+                Heute
+              </button>
+            </div>
+
+            <!-- Ansicht-Umschaltung: Kacheln oder Liste (Besonders praktisch auf dem Smartphone) -->
+            <div class="flex items-center gap-1 bg-surface-subtle p-1 rounded-xl border border-surface-border text-xs font-semibold">
+              <button 
+                id="btn-view-grid" 
+                onclick="App.setTrackerViewMode('grid')" 
+                class="px-2.5 py-1 rounded-lg transition-colors bg-white text-brand-700 shadow-sm"
+              >
+                Kacheln
+              </button>
+              <button 
+                id="btn-view-list" 
+                onclick="App.setTrackerViewMode('list')" 
+                class="px-2.5 py-1 rounded-lg transition-colors text-slate-500 hover:text-brand-700"
+              >
+                Liste
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Container für 7-Tage-Übersicht: Flexibel als 4x2-Raster oder großzügige Liste -->
+        <div id="tracker-days-container">
+          <!-- Dynamischer Inhalt durch App.renderTracker() -->
+        </div>
+
+        <!-- Statistik-Leiste -->
+        <div class="pt-3.5 border-t border-slate-100 flex items-center justify-between">
+          <span class="text-xs sm:text-sm font-bold text-slate-600">Gemacht</span>
+          <div class="flex items-center gap-1.5">
+            <span id="tracker-score-days" class="text-xl sm:text-2xl font-black text-brand-700">0</span>
+            <span class="text-xs sm:text-sm font-bold text-slate-400">/ 7 Tage</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ========================================== -->
+  <!-- DETAIL-MODAL FÜR GEDANKEN-PARKPLATZ        -->
+  <!-- ========================================== -->
+  <div id="modal-idea" class="fixed inset-0 z-50 hidden bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
+    <div id="modal-idea-dialog" class="bg-white w-full max-w-lg rounded-3xl p-5 sm:p-8 shadow-2xl border border-surface-border space-y-5">
+      
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3.5">
+        <h3 class="text-lg sm:text-xl font-bold text-[#35254D]">Idee bearbeiten</h3>
+        <button onclick="App.closeModal()" class="w-8 h-8 rounded-xl bg-surface-subtle hover:bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <form id="form-modal-idea" onsubmit="App.saveModalIdea(event)" class="space-y-4">
+        <input type="hidden" id="modal-idea-id">
+
+        <div class="space-y-1">
+          <label for="modal-input-what" class="block text-xs font-bold text-slate-700">
+            Was genau möchte ich tun?
+          </label>
+          <textarea 
+            id="modal-input-what" 
+            rows="3"
+            class="w-full bg-surface-subtle border border-surface-border rounded-2xl p-3 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all resize-none"
+            required
+          ></textarea>
+        </div>
+
+        <div class="space-y-1">
+          <label for="modal-input-why" class="block text-xs font-bold text-slate-700">
+            Warum möchte ich das tun?
+          </label>
+          <textarea 
+            id="modal-input-why" 
+            rows="3"
+            class="w-full bg-surface-subtle border border-surface-border rounded-2xl p-3 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all resize-none"
+          ></textarea>
+        </div>
+
+        <div class="space-y-2 pt-1">
+          <button 
+            type="button" 
+            id="btn-modal-toggle-focus" 
+            onclick="App.toggleModalFocus()"
+            class="w-full py-3 px-4 rounded-2xl font-bold text-sm transition-all duration-200 flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 text-white shadow-pill"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+            <span id="modal-focus-btn-text">Als Wochenfokus wählen</span>
+          </button>
+
+          <div class="flex items-center gap-2 pt-1">
+            <button 
+              type="submit" 
+              class="flex-1 py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-semibold text-xs transition-colors"
+            >
+              Speichern
+            </button>
+            <button 
+              type="button" 
+              onclick="App.deleteModalIdea()"
+              class="py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-red-50 text-slate-600 hover:text-red-600 font-semibold text-xs transition-colors"
+            >
+              Löschen
+            </button>
+          </div>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- ==================================================== -->
+  <!-- EIGENER INTEGRIERTER MINI-KALENDER (OHNE OS-POPUP) -->
+  <!-- ==================================================== -->
+  <div id="modal-calendar" class="fixed inset-0 z-50 hidden bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
+    <div id="modal-calendar-dialog" class="bg-white w-full max-w-xs rounded-3xl p-5 shadow-2xl border border-surface-border space-y-4">
+      
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="text-sm font-bold text-[#35254D]">Wochenstart wählen</h3>
+        <button onclick="App.closeCalendarModal()" class="w-7 h-7 rounded-xl bg-surface-subtle hover:bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center transition-colors">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Monat Navigation -->
+      <div class="flex items-center justify-between">
+        <button onclick="App.shiftCalendarMonth(-1)" class="w-7 h-7 rounded-lg hover:bg-surface-subtle flex items-center justify-center text-slate-600">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+        </button>
+        <span id="calendar-month-label" class="text-xs font-bold text-slate-800"></span>
+        <button onclick="App.shiftCalendarMonth(1)" class="w-7 h-7 rounded-lg hover:bg-surface-subtle flex items-center justify-center text-slate-600">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+
+      <!-- Wochentage Kopfzeile -->
+      <div class="grid grid-cols-7 text-center text-[10px] font-bold text-slate-400">
+        <span>Mo</span><span>Di</span><span>Mi</span><span>Do</span><span>Fr</span><span>Sa</span><span>So</span>
+      </div>
+
+      <!-- Tage Raster -->
+      <div id="calendar-days-container" class="grid grid-cols-7 gap-1 text-center">
+        <!-- Dynamisch befüllt -->
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- JAVASCRIPT-LOGIK                           -->
+  <!-- ========================================== -->
+  <script>
+    const App = (() => {
+
+      const STORAGE_KEY = 'one_thing_at_a_time_data_v3';
+
+      const state = {
+        currentView: 'home',
+        activeFocusId: null,
+        weekStartDate: '',
+        completedDates: [],
+        ideas: [],
+        trackerViewMode: 'grid',
+        calendarViewDate: new Date()
+      };
+
+      function getTodayISO() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      }
+
+      function addDays(isoDateString, days) {
+        const [y, m, d] = isoDateString.split('-').map(Number);
+        const date = new Date(y, m - 1, d);
+        date.setDate(date.getDate() + days);
+        const nextYear = date.getFullYear();
+        const nextMonth = String(date.getMonth() + 1).padStart(2, '0');
+        const nextDay = String(date.getDate()).padStart(2, '0');
+        return `${nextYear}-${nextMonth}-${nextDay}`;
+      }
+
+      function formatDayInfo(isoDateString) {
+        const [y, m, d] = isoDateString.split('-').map(Number);
+        const date = new Date(y, m - 1, d);
+        const weekdayNames = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
+        const monthNames = ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
+        return {
+          weekday: weekdayNames[date.getDay()],
+          formattedDate: `${d}. ${monthNames[date.getMonth()]}`,
+          shortDayMonth: `${d}. ${monthNames[date.getMonth()]}`,
+          dayNumber: d,
+          isToday: isoDateString === getTodayISO()
+        };
+      }
+
+      function loadState() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            state.activeFocusId = parsed.activeFocusId || null;
+            state.weekStartDate = parsed.weekStartDate || getTodayISO();
+            state.completedDates = Array.isArray(parsed.completedDates) ? parsed.completedDates : [];
+            state.ideas = Array.isArray(parsed.ideas) ? parsed.ideas : [];
+            state.trackerViewMode = parsed.trackerViewMode || 'grid';
+            return;
+          }
+        } catch (e) {
+          console.warn('Fehler beim Laden:', e);
+        }
+        initDefaultData();
+      }
+
+      function saveState() {
+        try {
+          const dataToSave = {
+            activeFocusId: state.activeFocusId,
+            weekStartDate: state.weekStartDate,
+            completedDates: state.completedDates,
+            ideas: state.ideas,
+            trackerViewMode: state.trackerViewMode
+          };
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
+        } catch (e) {
+          console.warn('Fehler beim Speichern:', e);
+        }
+      }
+
+      function initDefaultData() {
+        const id1 = 'idea-focus-1';
+        const id2 = 'idea-focus-2';
+        const id3 = 'idea-focus-3';
+
+        state.weekStartDate = getTodayISO();
+        state.completedDates = [];
+        state.activeFocusId = id1;
+
+        state.ideas = [
+          {
+            id: id1,
+            title: 'Jeden Abend Kena Bridge of Spirits spielen',
+            what: 'Jeden Abend Kena Bridge of Spirits spielen',
+            why: 'Einfach abschalten und die Spielwelt genießen',
+            createdAt: new Date().toISOString()
+          },
+          {
+            id: id2,
+            title: 'Kleiderschrank sortieren',
+            what: 'Aussortieren und spenden',
+            why: 'Mehr Leichtigkeit und Ordnung',
+            createdAt: new Date().toISOString()
+          },
+          {
+            id: id3,
+            title: 'Neues Rezept kochen',
+            what: 'Frisch kochen am Wochenende',
+            why: 'Genussvoll zur Ruhe kommen',
+            createdAt: new Date().toISOString()
+          }
+        ];
+
+        saveState();
+      }
+
+      function navigate(targetView) {
+        state.currentView = targetView;
+
+        const views = {
+          home: document.getElementById('section-home'),
+          ideas: document.getElementById('section-ideas'),
+          tracker: document.getElementById('section-tracker')
+        };
+
+        const navBtns = {
+          home: document.getElementById('nav-btn-home'),
+          ideas: document.getElementById('nav-btn-ideas'),
+          tracker: document.getElementById('nav-btn-tracker')
+        };
+
+        Object.keys(views).forEach(key => {
+          if (key === targetView) {
+            views[key].classList.remove('hidden');
+          } else {
+            views[key].classList.add('hidden');
+          }
+        });
+
+        Object.keys(navBtns).forEach(key => {
+          const btn = navBtns[key];
+          if (key === targetView) {
+            btn.className = 'nav-tab px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 flex items-center gap-1.5 bg-brand-500 text-white shadow-pill';
+          } else {
+            btn.className = 'nav-tab px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 flex items-center gap-1.5 text-slate-600 hover:text-brand-700 hover:bg-brand-50';
+          }
+        });
+
+        renderAll();
+      }
+
+      function getActiveFocusIdea() {
+        if (!state.activeFocusId) return null;
+        return state.ideas.find(i => i.id === state.activeFocusId) || null;
+      }
+
+      function renderAll() {
+        renderHome();
+        renderIdeas();
+        renderTracker();
+      }
+
+      function renderHome() {
+        const activeIdea = getActiveFocusIdea();
+        const today = getTodayISO();
+        const isTodayDone = state.completedDates.includes(today);
+
+        // 1. Eulen-Maskottchen
+        const owlEl = document.getElementById('home-owl-mascot');
+        if (isTodayDone) {
+          owlEl.className = 'w-full h-full object-contain animate-gentle-float select-none transition-all duration-500 filter-none opacity-100';
+        } else {
+          owlEl.className = 'w-full h-full object-contain animate-gentle-float select-none transition-all duration-500 filter grayscale contrast-90 opacity-60';
+        }
+
+        // 2. Fokus-Text unter der Eule
+        const quoteEl = document.getElementById('home-quote-text');
+        if (activeIdea) {
+          quoteEl.textContent = activeIdea.title;
+        } else {
+          quoteEl.textContent = 'Kein Fokus gewählt';
+        }
+
+        // 3. Button
+        const todayBtn = document.getElementById('btn-toggle-today');
+        if (isTodayDone) {
+          todayBtn.className = 'w-full py-4 px-6 rounded-2xl font-bold text-base sm:text-lg transition-all duration-300 bg-brand-500 hover:bg-brand-600 text-white shadow-pill transform active:scale-95 flex items-center justify-center gap-2.5';
+          todayBtn.innerHTML = `
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+            </svg>
+            <span>Heute gemacht</span>
+          `;
+        } else {
+          todayBtn.className = 'w-full py-4 px-6 rounded-2xl font-bold text-base sm:text-lg transition-all duration-300 bg-surface-subtle hover:bg-brand-100 text-brand-700 border border-surface-border shadow-sm transform active:scale-95 flex items-center justify-center gap-2.5';
+          todayBtn.innerHTML = `
+            <svg class="w-5 h-5 text-brand-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="9"/>
+            </svg>
+            <span>Heute gemacht!</span>
+          `;
+        }
+      }
+
+      function renderIdeas() {
+        const container = document.getElementById('ideas-list-container');
+        const emptyState = document.getElementById('ideas-empty-state');
+        const countBadge = document.getElementById('badge-ideas-count');
+        const totalStat = document.getElementById('ideas-stat-total');
+
+        countBadge.textContent = state.ideas.length;
+        totalStat.textContent = `${state.ideas.length} ${state.ideas.length === 1 ? 'Idee' : 'Ideen'}`;
+
+        if (state.ideas.length === 0) {
+          container.innerHTML = '';
+          emptyState.classList.remove('hidden');
+          return;
+        }
+
+        emptyState.classList.add('hidden');
+
+        const sortedIdeas = [...state.ideas].sort((a, b) => {
+          if (a.id === state.activeFocusId) return -1;
+          if (b.id === state.activeFocusId) return 1;
+          return new Date(b.createdAt) - new Date(a.createdAt);
+        });
+
+        let html = '';
+
+        sortedIdeas.forEach(idea => {
+          const isActive = idea.id === state.activeFocusId;
+          const isOtherParked = Boolean(state.activeFocusId && !isActive);
+
+          let cardClasses = 'group rounded-2xl p-3.5 sm:p-4 transition-all duration-200 border flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer ';
+          
+          if (isActive) {
+            cardClasses += 'bg-surface-subtle border-brand-300 shadow-sm';
+          } else if (isOtherParked) {
+            cardClasses += 'bg-white/60 border-slate-100 opacity-50 hover:opacity-90 hover:bg-white';
+          } else {
+            cardClasses += 'bg-white border-slate-100 hover:border-brand-200 hover:shadow-soft';
+          }
+
+          html += `
+            <div class="${cardClasses}" onclick="App.openModal('${idea.id}')">
+              
+              <div class="flex items-center gap-3 flex-1 min-w-0">
+                <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${isActive ? 'bg-brand-500 text-white' : 'bg-surface-subtle text-slate-400'} font-bold text-xs">
+                  ${escapeHtml(idea.title.charAt(0).toUpperCase())}
+                </div>
+
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <h3 class="text-sm sm:text-base font-bold text-slate-800 truncate">${escapeHtml(idea.title)}</h3>
+                    ${isActive ? `
+                      <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-brand-500 text-white">
+                        Aktiver Wochenfokus
+                      </span>
+                    ` : (isOtherParked ? `
+                      <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-500">
+                        Geparkt
+                      </span>
+                    ` : '')}
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-2 self-end sm:self-center" onclick="event.stopPropagation()">
+                <button 
+                  onclick="App.toggleIdeaFocusDirect('${idea.id}')"
+                  class="p-2 rounded-xl text-xs font-semibold transition-colors flex items-center gap-1.5 ${isActive ? 'bg-brand-100 text-brand-700 hover:bg-brand-200' : 'bg-surface-subtle text-slate-500 hover:bg-brand-50 hover:text-brand-700'}"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                  </svg>
+                  <span>${isActive ? 'Fokus beenden' : 'Als Fokus wählen'}</span>
+                </button>
+
+                <button 
+                  onclick="App.openModal('${idea.id}')"
+                  class="p-2 text-slate-400 hover:text-brand-600 transition-colors"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                  </svg>
+                </button>
+              </div>
+
+            </div>
+          `;
+        });
+
+        container.innerHTML = html;
+      }
+
+      function getWeekDatesArray() {
+        const startDate = state.weekStartDate || getTodayISO();
+        const dates = [];
+        for (let i = 0; i < 7; i++) {
+          dates.push(addDays(startDate, i));
+        }
+        return dates;
+      }
+
+      function renderTracker() {
+        const activeIdea = getActiveFocusIdea();
+        const headlineEl = document.getElementById('tracker-focus-headline');
+        const container = document.getElementById('tracker-days-container');
+        const scoreEl = document.getElementById('tracker-score-days');
+        const weekRangeLabel = document.getElementById('tracker-week-range-label');
+        const btnGrid = document.getElementById('btn-view-grid');
+        const btnList = document.getElementById('btn-view-list');
+
+        if (activeIdea) {
+          headlineEl.textContent = `Fokus der Woche: ${activeIdea.title}`;
+        } else {
+          headlineEl.textContent = 'Fokus der Woche: Kein Fokus gewählt';
+        }
+
+        const weekDates = getWeekDatesArray();
+        const firstDayInfo = formatDayInfo(weekDates[0]);
+        const lastDayInfo = formatDayInfo(weekDates[6]);
+        weekRangeLabel.textContent = `${firstDayInfo.shortDayMonth} – ${lastDayInfo.shortDayMonth}`;
+
+        if (state.trackerViewMode === 'list') {
+          btnGrid.className = 'px-2.5 py-1 rounded-lg transition-colors text-slate-500 hover:text-brand-700';
+          btnList.className = 'px-2.5 py-1 rounded-lg transition-colors bg-white text-brand-700 shadow-sm';
+        } else {
+          btnGrid.className = 'px-2.5 py-1 rounded-lg transition-colors bg-white text-brand-700 shadow-sm';
+          btnList.className = 'px-2.5 py-1 rounded-lg transition-colors text-slate-500 hover:text-brand-700';
+        }
+
+        let completedCount = 0;
+        weekDates.forEach((d) => {
+          if (state.completedDates.includes(d)) completedCount++;
+        });
+
+        scoreEl.textContent = completedCount;
+
+        if (state.trackerViewMode === 'list') {
+          let html = '<div class="space-y-2">';
+          weekDates.forEach((dateStr) => {
+            const isDone = state.completedDates.includes(dateStr);
+            const dayInfo = formatDayInfo(dateStr);
+
+            html += `
+              <button 
+                type="button"
+                onclick="App.toggleTrackerDay('${dateStr}')"
+                class="w-full rounded-2xl p-3 sm:p-4 flex items-center justify-between text-left transition-all duration-200 border ${
+                  isDone 
+                    ? 'bg-surface-subtle border-brand-200 shadow-sm' 
+                    : 'bg-white border-slate-100 hover:border-brand-200'
+                } ${dayInfo.isToday ? 'ring-2 ring-brand-500' : ''}"
+              >
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-xs ${
+                    dayInfo.isToday 
+                      ? 'bg-brand-500 text-white' 
+                      : 'bg-surface-subtle text-brand-700 border border-surface-border'
+                  }">
+                    ${dayInfo.weekday}
+                  </div>
+                  <div>
+                    <div class="flex items-center gap-2">
+                      <span class="text-sm font-bold text-slate-800">${dayInfo.formattedDate}</span>
+                      ${dayInfo.isToday ? `
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-brand-100 text-brand-700">
+                          Heute
+                        </span>
+                      ` : ''}
+                    </div>
+                  </div>
+                </div>
+
+                <div class="flex items-center gap-3">
+                  <span class="text-xs font-semibold ${isDone ? 'text-brand-700' : 'text-slate-400'}">
+                    ${isDone ? 'Gemacht' : 'Offen'}
+                  </span>
+                  <div class="w-10 h-10 flex items-center justify-center">
+                    ${isDone ? `
+                      <img src="owl.png" alt="Gemacht" class="w-9 h-9 object-contain select-none transform transition-transform group-hover:scale-110">
+                    ` : `
+                      <svg viewBox="0 0 100 100" class="w-9 h-9 text-slate-300 stroke-current fill-none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M 28 30 C 20 18, 18 16, 32 18 C 40 20, 60 20, 68 18 C 82 16, 80 18, 72 30 C 86 44, 88 74, 78 86 C 70 94, 30 94, 22 86 C 12 74, 14 44, 28 30 Z" />
+                        <circle cx="36" cy="42" r="14" />
+                        <circle cx="64" cy="42" r="14" />
+                        <path d="M 50 42 C 49 40, 51 40, 50 42" stroke-width="3.5" />
+                        <circle cx="38" cy="42" r="2.5" fill="currentColor" />
+                        <circle cx="62" cy="42" r="2.5" fill="currentColor" />
+                        <path d="M 47 48 Q 50 56 53 48 Z" />
+                        <path d="M 33 72 Q 50 82 67 72" />
+                        <path d="M 22 54 Q 26 68 23 76" />
+                        <path d="M 78 54 Q 74 68 77 76" />
+                        <path d="M 35 91 Q 39 95 43 91" />
+                        <path d="M 57 91 Q 61 95 65 91" />
+                      </svg>
+                    `}
+                  </div>
+                </div>
+              </button>
+            `;
+          });
+          html += '</div>';
+          container.innerHTML = html;
+        } else {
+          let html = '<div class="grid grid-cols-4 sm:grid-cols-7 gap-2 sm:gap-2.5">';
+          weekDates.forEach((dateStr) => {
+            const isDone = state.completedDates.includes(dateStr);
+            const dayInfo = formatDayInfo(dateStr);
+
+            html += `
+              <button 
+                type="button"
+                onclick="App.toggleTrackerDay('${dateStr}')"
+                class="group relative rounded-2xl p-2.5 sm:p-3 flex flex-col items-center justify-between text-center transition-all duration-200 border ${
+                  isDone 
+                    ? 'bg-surface-subtle border-brand-200 shadow-sm' 
+                    : 'bg-white border-slate-100 hover:border-brand-200'
+                } ${dayInfo.isToday ? 'ring-2 ring-brand-500 ring-offset-1' : ''}"
+              >
+                <div class="space-y-0.5">
+                  <span class="block text-xs font-bold ${dayInfo.isToday ? 'text-brand-700' : 'text-slate-600'}">
+                    ${dayInfo.weekday}
+                  </span>
+                  <span class="block text-[11px] font-medium text-slate-400">
+                    ${dayInfo.dayNumber}.
+                  </span>
+                </div>
+
+                <div class="my-2 sm:my-3 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center">
+                  ${isDone ? `
+                    <img 
+                      src="owl.png" 
+                      alt="Gemacht" 
+                      class="w-full h-full object-contain select-none transform transition-transform group-hover:scale-110"
+                    >
+                  ` : `
+                    <svg 
+                      viewBox="0 0 100 100" 
+                      class="w-8 h-8 sm:w-11 sm:h-11 text-slate-300 group-hover:text-brand-400 stroke-current fill-none transition-colors" 
+                      stroke-width="3" 
+                      stroke-linecap="round" 
+                      stroke-linejoin="round" 
+                    >
+                      <path d="M 28 30 C 20 18, 18 16, 32 18 C 40 20, 60 20, 68 18 C 82 16, 80 18, 72 30 C 86 44, 88 74, 78 86 C 70 94, 30 94, 22 86 C 12 74, 14 44, 28 30 Z" />
+                      <circle cx="36" cy="42" r="14" />
+                      <circle cx="64" cy="42" r="14" />
+                      <path d="M 50 42 C 49 40, 51 40, 50 42" stroke-width="3.5" />
+                      <circle cx="38" cy="42" r="2.5" fill="currentColor" />
+                      <circle cx="62" cy="42" r="2.5" fill="currentColor" />
+                      <path d="M 47 48 Q 50 56 53 48 Z" />
+                      <path d="M 33 72 Q 50 82 67 72" />
+                      <path d="M 22 54 Q 26 68 23 76" />
+                      <path d="M 78 54 Q 74 68 77 76" />
+                      <path d="M 35 91 Q 39 95 43 91" />
+                      <path d="M 57 91 Q 61 95 65 91" />
+                    </svg>
+                  `}
+                </div>
+
+                <div>
+                  ${dayInfo.isToday ? `
+                    <span class="inline-block px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-brand-100 text-brand-700">
+                      Heute
+                    </span>
+                  ` : `
+                    <span class="inline-block text-[10px] font-medium text-slate-400">
+                      ${isDone ? `
+                        <svg class="w-3 h-3 text-brand-600 inline" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                        </svg>
+                      ` : '—'}
+                    </span>
+                  `}
+                </div>
+              </button>
+            `;
+          });
+
+          html += `
+            <div class="sm:hidden rounded-2xl p-2.5 bg-surface-subtle border border-surface-border flex flex-col items-center justify-center text-center">
+              <span class="text-[10px] font-bold text-slate-500">Gemacht</span>
+              <span class="text-base font-black text-brand-700 my-1">${completedCount} / 7</span>
+              <span class="text-[9px] text-slate-400">Tage</span>
+            </div>
+          `;
+
+          html += '</div>';
+          container.innerHTML = html;
+        }
+      }
+
+      function setTrackerViewMode(mode) {
+        state.trackerViewMode = mode;
+        saveState();
+        renderTracker();
+      }
+
+      function toggleToday() {
+        const today = getTodayISO();
+        toggleTrackerDay(today);
+      }
+
+      function toggleTrackerDay(dateStr) {
+        const index = state.completedDates.indexOf(dateStr);
+        if (index > -1) {
+          state.completedDates.splice(index, 1);
+        } else {
+          state.completedDates.push(dateStr);
+        }
+        saveState();
+        renderAll();
+      }
+
+      // Verschiebt das Startdatum flexibel um beliebige Tage (-7, -1, +1, +7)
+      function shiftStartDate(days) {
+        state.weekStartDate = addDays(state.weekStartDate || getTodayISO(), days);
+        saveState();
+        renderAll();
+      }
+
+      function setStartDateToToday() {
+        state.weekStartDate = getTodayISO();
+        saveState();
+        renderAll();
+      }
+
+      function setStartDateDirect(isoDate) {
+        state.weekStartDate = isoDate;
+        saveState();
+        closeCalendarModal();
+        renderAll();
+      }
+
+      // -------------------------------------------------------------
+      // INTEGRIERTER MINI-KALENDER
+      // -------------------------------------------------------------
+      function openCalendarModal() {
+        const currentStart = state.weekStartDate || getTodayISO();
+        const [y, m] = currentStart.split('-').map(Number);
+        state.calendarViewDate = new Date(y, m - 1, 1);
+        renderCalendar();
+        document.getElementById('modal-calendar').classList.remove('hidden');
+      }
+
+      function closeCalendarModal() {
+        document.getElementById('modal-calendar').classList.add('hidden');
+      }
+
+      function shiftCalendarMonth(direction) {
+        state.calendarViewDate.setMonth(state.calendarViewDate.getMonth() + direction);
+        renderCalendar();
+      }
+
+      function renderCalendar() {
+        const label = document.getElementById('calendar-month-label');
+        const container = document.getElementById('calendar-days-container');
+
+        const monthNames = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
+        const year = state.calendarViewDate.getFullYear();
+        const month = state.calendarViewDate.getMonth();
+
+        label.textContent = `${monthNames[month]} ${year}`;
+
+        // Erster Wochentag (0=So, 1=Mo...)
+        const firstDayOfMonth = new Date(year, month, 1).getDay();
+        // Umwandlung in Mo=0 ... So=6
+        const offset = (firstDayOfMonth + 6) % 7;
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+        let html = '';
+
+        // Leere Felder vor dem 1. des Monats
+        for (let i = 0; i < offset; i++) {
+          html += `<div class="p-1"></div>`;
+        }
+
+        const currentStart = state.weekStartDate || getTodayISO();
+
+        for (let d = 1; d <= daysInMonth; d++) {
+          const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+          const isSelected = dateStr === currentStart;
+          const isToday = dateStr === getTodayISO();
+
+          html += `
+            <button 
+              type="button"
+              onclick="App.setStartDateDirect('${dateStr}')" 
+              class="w-7 h-7 mx-auto rounded-lg text-xs font-semibold flex items-center justify-center transition-colors ${
+                isSelected 
+                  ? 'bg-brand-500 text-white font-bold shadow-sm' 
+                  : (isToday ? 'bg-brand-100 text-brand-700 font-bold' : 'hover:bg-surface-subtle text-slate-700')
+              }"
+            >
+              ${d}
+            </button>
+          `;
+        }
+
+        container.innerHTML = html;
+      }
+
+      function handleQuickAdd(event) {
+        event.preventDefault();
+        const input = document.getElementById('input-quick-title');
+        const title = input.value.trim();
+        if (!title) return;
+
+        const newIdea = {
+          id: 'idea-' + Date.now(),
+          title: title,
+          what: title,
+          why: '',
+          createdAt: new Date().toISOString()
+        };
+
+        state.ideas.unshift(newIdea);
+        input.value = '';
+        saveState();
+        renderAll();
+      }
+
+      function toggleIdeaFocusDirect(ideaId) {
+        if (state.activeFocusId === ideaId) {
+          state.activeFocusId = null;
+        } else {
+          state.activeFocusId = ideaId;
+        }
+        saveState();
+        renderAll();
+      }
+
+      // -------------------------------------------------------------
+      // MODAL-LOGIK (FEHLERFREIES TEXT-MARKIEREN & LÖSCHEN)
+      // -------------------------------------------------------------
+      let currentEditingIdeaId = null;
+
+      function openModal(ideaId) {
+        const idea = state.ideas.find(i => i.id === ideaId);
+        if (!idea) return;
+
+        currentEditingIdeaId = ideaId;
+
+        document.getElementById('modal-idea-id').value = idea.id;
+        document.getElementById('modal-input-what').value = idea.what || idea.title;
+        document.getElementById('modal-input-why').value = idea.why || '';
+
+        updateModalFocusButton(idea.id);
+
+        const modal = document.getElementById('modal-idea');
+        modal.classList.remove('hidden');
+      }
+
+      function updateModalFocusButton(ideaId) {
+        const btn = document.getElementById('btn-modal-toggle-focus');
+        const text = document.getElementById('modal-focus-btn-text');
+
+        if (state.activeFocusId === ideaId) {
+          text.textContent = 'Wochenfokus beenden';
+          btn.className = 'w-full py-3 px-4 rounded-2xl font-bold text-sm transition-all duration-200 flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700';
+        } else {
+          text.textContent = 'Als Wochenfokus wählen';
+          btn.className = 'w-full py-3 px-4 rounded-2xl font-bold text-sm transition-all duration-200 flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 text-white shadow-pill';
+        }
+      }
+
+      function closeModal() {
+        const modal = document.getElementById('modal-idea');
+        modal.classList.add('hidden');
+        currentEditingIdeaId = null;
+      }
+
+      function toggleModalFocus() {
+        if (!currentEditingIdeaId) return;
+
+        if (state.activeFocusId === currentEditingIdeaId) {
+          state.activeFocusId = null;
+        } else {
+          state.activeFocusId = currentEditingIdeaId;
+        }
+
+        saveState();
+        updateModalFocusButton(currentEditingIdeaId);
+        renderAll();
+      }
+
+      function saveModalIdea(event) {
+        event.preventDefault();
+        if (!currentEditingIdeaId) return;
+
+        const whatValue = document.getElementById('modal-input-what').value.trim();
+        const whyValue = document.getElementById('modal-input-why').value.trim();
+
+        const idea = state.ideas.find(i => i.id === currentEditingIdeaId);
+        if (idea) {
+          idea.what = whatValue;
+          if (whatValue.length <= 60 && !whatValue.includes('\n')) {
+            idea.title = whatValue;
+          }
+          idea.why = whyValue;
+          saveState();
+          renderAll();
+        }
+
+        closeModal();
+      }
+
+      function deleteModalIdea() {
+        if (!currentEditingIdeaId) return;
+
+        if (state.activeFocusId === currentEditingIdeaId) {
+          state.activeFocusId = null;
+        }
+
+        state.ideas = state.ideas.filter(i => i.id !== currentEditingIdeaId);
+        saveState();
+        renderAll();
+        closeModal();
+      }
+
+      function escapeHtml(text) {
+        if (!text) return '';
+        return String(text)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;');
+      }
+
+      function init() {
+        loadState();
+        renderAll();
+
+        // BEHEBUNG DES TEXTMARKIERUNGS-BUGS:
+        // Das Modal schließt sich nur, wenn sowohl mousedown als auch mouseup direkt auf dem abgedunkelten Hintergrund stattfinden.
+        // Wenn man Text im Textfeld markiert und die Maus über den Rand zieht, schließt sich das Fenster NIE versehentlich.
+        const modal = document.getElementById('modal-idea');
+        const modalDialog = document.getElementById('modal-idea-dialog');
+
+        modalDialog.addEventListener('click', (e) => e.stopPropagation());
+        modalDialog.addEventListener('mousedown', (e) => e.stopPropagation());
+        modalDialog.addEventListener('mouseup', (e) => e.stopPropagation());
+
+        let isBackdropMouseDown = false;
+        modal.addEventListener('mousedown', (e) => {
+          isBackdropMouseDown = (e.target === modal);
+        });
+        modal.addEventListener('mouseup', (e) => {
+          if (isBackdropMouseDown && e.target === modal) {
+            closeModal();
+          }
+          isBackdropMouseDown = false;
+        });
+
+        // Gleicher sicherer Klick-Schutz für das Kalender-Modal
+        const calModal = document.getElementById('modal-calendar');
+        const calDialog = document.getElementById('modal-calendar-dialog');
+
+        calDialog.addEventListener('click', (e) => e.stopPropagation());
+        calDialog.addEventListener('mousedown', (e) => e.stopPropagation());
+        calDialog.addEventListener('mouseup', (e) => e.stopPropagation());
+
+        let isCalBackdropMouseDown = false;
+        calModal.addEventListener('mousedown', (e) => {
+          isCalBackdropMouseDown = (e.target === calModal);
+        });
+        calModal.addEventListener('mouseup', (e) => {
+          if (isCalBackdropMouseDown && e.target === calModal) {
+            closeCalendarModal();
+          }
+          isCalBackdropMouseDown = false;
+        });
+
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') {
+            closeModal();
+            closeCalendarModal();
+          }
+        });
+      }
+
+      return {
+        init,
+        navigate,
+        toggleToday,
+        toggleTrackerDay,
+        shiftStartDate,
+        setStartDateToToday,
+        setStartDateDirect,
+        openCalendarModal,
+        closeCalendarModal,
+        shiftCalendarMonth,
+        handleQuickAdd,
+        toggleIdeaFocusDirect,
+        openModal,
+        closeModal,
+        toggleModalFocus,
+        saveModalIdea,
+        deleteModalIdea,
+        setTrackerViewMode
+      };
+
+    })();
+
+    document.addEventListener('DOMContentLoaded', () => {
+      App.init();
+    });
+  </script>
+
+</body>
+</html>
