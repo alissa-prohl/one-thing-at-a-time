@@ -1,4 +1,4 @@
-import { DateHelper } from '../services/DateHelper.js';
+import { DateHelper } from '../services/DateHelper.js?v=2';
 
 /**
  * WeekTracker Model

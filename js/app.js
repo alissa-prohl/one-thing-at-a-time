@@ -1,11 +1,11 @@
-import { Idea } from './models/Idea.js';
-import { WeekTracker } from './models/WeekTracker.js';
-import { DateHelper } from './services/DateHelper.js';
-import { StorageService } from './services/StorageService.js';
-import { HomeView } from './views/HomeView.js';
-import { ParkingView } from './views/ParkingView.js';
-import { TrackerView } from './views/TrackerView.js';
-import { ModalManager } from './views/ModalManager.js';
+import { Idea } from './models/Idea.js?v=2';
+import { WeekTracker } from './models/WeekTracker.js?v=2';
+import { DateHelper } from './services/DateHelper.js?v=2';
+import { StorageService } from './services/StorageService.js?v=2';
+import { HomeView } from './views/HomeView.js?v=2';
+import { ParkingView } from './views/ParkingView.js?v=2';
+import { TrackerView } from './views/TrackerView.js?v=2';
+import { ModalManager } from './views/ModalManager.js?v=2';
 
 /**
  * App (Haupt-Controller)

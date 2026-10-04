@@ -72,7 +72,7 @@
   </script>
 
   <!-- Eigene Styles (Scrollbars, Anti-Zoom, Animationen) -->
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css?v=2">
 </head>
 
 <body class="h-full bg-surface-bg text-slate-700 font-sans antialiased flex flex-col selection:bg-brand-200 selection:text-brand-900">
@@ -83,8 +83,8 @@
   <header class="w-full max-w-4xl mx-auto px-4 sm:px-6 pt-5 pb-3">
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
       
-      <!-- Logo & Titel -->
-      <div class="flex items-center gap-2.5">
+      <!-- Logo & Titel (Antippen lädt die App sofort frisch neu) -->
+      <div onclick="window.location.reload()" title="Tippen zum Aktualisieren" class="flex items-center gap-2.5 cursor-pointer active:scale-95 transition-transform select-none">
         <div class="w-10 h-10 rounded-2xl bg-white shadow-soft flex items-center justify-center p-1.5 border border-surface-border">
           <img src="owl.png" alt="Owl Mascot Logo" class="w-full h-full object-contain">
         </div>
@@ -520,7 +520,7 @@
   <!-- ========================================== -->
   <!-- MODULARE APP-LOGIK (ES6-MODULE)           -->
   <!-- ========================================== -->
-  <script type="module" src="js/app.js"></script>
+  <script type="module" src="js/app.js?v=2"></script>
 
 </body>
 </html>
