@@ -1,0 +1,17 @@
+{
+  "name": "One thing at a time",
+  "short_name": "OneThing",
+  "description": "Minimalistische Fokus-App",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#ECE0F5",
+  "theme_color": "#ECE0F5",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
