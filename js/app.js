@@ -55,6 +55,7 @@ class AppController {
     this.weekTracker = new WeekTracker({
       startDate: saved.weekStartDate,
       completedDates: saved.completedDates,
+      careDates: saved.careDates,
       viewMode: saved.trackerViewMode
     });
   }
@@ -67,6 +68,7 @@ class AppController {
       activeFocusId: this.activeFocusId,
       weekStartDate: this.weekTracker.startDate,
       completedDates: this.weekTracker.completedDates,
+      careDates: this.weekTracker.careDates,
       ideas: this.ideas.map((idea) => idea.toJSON()),
       trackerViewMode: this.weekTracker.viewMode
     });
@@ -87,12 +89,12 @@ class AppController {
   renderAll() {
     const activeIdea = this.getActiveFocusIdea();
     const today = DateHelper.getTodayISO();
-    const isTodayDone = this.weekTracker.isDateCompleted(today);
+    const todayStatus = this.weekTracker.getDayStatus(today);
 
-    // 1. Startseite
+    // 1. Startseite (Eule, Spruch, Fokus- & Care-Button)
     this.homeView.render({
       activeIdea,
-      isTodayDone
+      todayStatus
     });
 
     // 2. Gedanken-Parkplatz
@@ -102,7 +104,7 @@ class AppController {
     this.trackerView.render({
       activeIdea,
       weekDates: this.weekTracker.getWeekDates(),
-      isDateCompletedFn: (dateStr) => this.weekTracker.isDateCompleted(dateStr),
+      getDayStatusFn: (dateStr) => this.weekTracker.getDayStatus(dateStr),
       completedCount: this.weekTracker.getCompletedCountForCurrentWeek(),
       viewMode: this.weekTracker.viewMode
     });
@@ -155,20 +157,42 @@ class AppController {
   // =============================================================
 
   /**
-   * Klick auf den großen "Heute gemacht!"-Button auf der Startseite.
+   * Klick auf den großen "Heute gemacht!"-Button auf der Startseite (Wochenfokus).
    */
   toggleToday() {
     if (!this.activeFocusId) return;
     const today = DateHelper.getTodayISO();
-    this.toggleTrackerDay(today);
+    this.weekTracker.toggleFocusDate(today);
+    this.saveState();
+    this.renderAll();
+  }
+
+  /**
+   * Klick auf den 2. Button: "Etwas anderes gemacht, was mir gut getan hat!".
+   * Immer aktivierbar, auch ohne festen Wochenfokus.
+   */
+  toggleCareToday() {
+    const today = DateHelper.getTodayISO();
+    this.weekTracker.toggleCareDate(today);
+    this.saveState();
+    this.renderAll();
   }
 
   /**
    * Klick auf einen beliebigen Tag im Tracker.
+   * Schaltet durch die Zustände: Offen -> Fokus gemacht -> Etwas anderes gut getan -> Offen.
    * @param {string} dateStr - Datum als "YYYY-MM-DD"
    */
   toggleTrackerDay(dateStr) {
-    this.weekTracker.toggleDate(dateStr);
+    const currentStatus = this.weekTracker.getDayStatus(dateStr);
+    if (currentStatus === 'open') {
+      this.weekTracker.toggleFocusDate(dateStr);
+    } else if (currentStatus === 'focus') {
+      this.weekTracker.toggleCareDate(dateStr);
+    } else {
+      // War 'care', jetzt wieder auf 'open'
+      this.weekTracker.toggleCareDate(dateStr);
+    }
     this.saveState();
     this.renderAll();
   }
@@ -213,7 +237,7 @@ class AppController {
     this.trackerView.render({
       activeIdea: this.getActiveFocusIdea(),
       weekDates: this.weekTracker.getWeekDates(),
-      isDateCompletedFn: (dateStr) => this.weekTracker.isDateCompleted(dateStr),
+      getDayStatusFn: (dateStr) => this.weekTracker.getDayStatus(dateStr),
       completedCount: this.weekTracker.getCompletedCountForCurrentWeek(),
       viewMode: this.weekTracker.viewMode
     });

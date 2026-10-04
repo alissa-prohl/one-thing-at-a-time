@@ -23,6 +23,7 @@ export class StorageService {
           activeFocusId: parsed.activeFocusId || null,
           weekStartDate: parsed.weekStartDate || null,
           completedDates: Array.isArray(parsed.completedDates) ? parsed.completedDates : [],
+          careDates: Array.isArray(parsed.careDates) ? parsed.careDates : [],
           ideas: Array.isArray(parsed.ideas) ? parsed.ideas : [],
           trackerViewMode: parsed.trackerViewMode || 'grid'
         };
@@ -36,6 +37,7 @@ export class StorageService {
       activeFocusId: null,
       weekStartDate: null,
       completedDates: [],
+      careDates: [],
       ideas: [],
       trackerViewMode: 'grid'
     };
@@ -51,6 +53,7 @@ export class StorageService {
         activeFocusId: data.activeFocusId || null,
         weekStartDate: data.weekStartDate || null,
         completedDates: data.completedDates || [],
+        careDates: data.careDates || [],
         ideas: data.ideas || [],
         trackerViewMode: data.trackerViewMode || 'grid'
       };

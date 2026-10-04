@@ -136,12 +136,32 @@
           
           <!-- Eulen-Maskottchen (Groß, transparentes PNG, farblos wenn nicht erledigt) -->
           <div class="relative w-64 h-64 sm:w-72 sm:h-72 md:w-80 md:h-80 mb-5 flex items-center justify-center">
-            <img 
-              id="home-owl-mascot"
-              src="owl.png" 
-              alt="Owl Mascot" 
-              class="w-full h-full object-contain animate-gentle-float select-none transition-all duration-500"
-            >
+            <div id="home-owl-wrapper" class="relative w-full h-full animate-gentle-float select-none transition-all duration-500 flex items-center justify-center">
+              <img 
+                id="home-owl-mascot"
+                src="owl.png" 
+                alt="Owl Mascot" 
+                class="w-full h-full object-contain select-none transition-all duration-500"
+              >
+              <!-- Feines botanisches Salbeiblatt-Overlay am rechten Feder-Ohr -->
+              <div 
+                id="home-owl-leaf-badge" 
+                class="absolute top-[6%] right-[13%] w-14 h-14 sm:w-16 sm:h-16 pointer-events-none transition-all duration-500 owl-leaf-hidden"
+              >
+                <svg viewBox="0 0 64 64" fill="none" class="w-full h-full drop-shadow-sm">
+                  <!-- Stängel -->
+                  <path d="M12 52 C22 42, 34 30, 48 14" stroke="#567758" stroke-width="2.5" stroke-linecap="round"/>
+                  <!-- Unteres Blatt -->
+                  <path d="M24 40 C14 36, 12 24, 22 20 C30 22, 32 32, 24 40 Z" fill="#7E9F83" stroke="#466548" stroke-width="1.5" stroke-linejoin="round"/>
+                  <path d="M20 28 C24 30, 27 34, 26 38" stroke="#A8C4AA" stroke-width="1.2" stroke-linecap="round"/>
+                  <!-- Oberes Blatt -->
+                  <path d="M38 26 C36 14, 46 8, 54 14 C56 24, 46 30, 38 26 Z" fill="#6B8E6D" stroke="#466548" stroke-width="1.5" stroke-linejoin="round"/>
+                  <path d="M44 16 C45 20, 44 24, 40 26" stroke="#A8C4AA" stroke-width="1.2" stroke-linecap="round"/>
+                  <!-- Zarter Spitzentrieb -->
+                  <path d="M48 14 C50 10, 55 9, 57 12 C57 16, 52 17, 48 14 Z" fill="#8EAF93" stroke="#466548" stroke-width="1.2" stroke-linejoin="round"/>
+                </svg>
+              </div>
+            </div>
           </div>
 
           <!-- Fokus-Titel direkt unter der Eule (Keine Kommentare) -->
@@ -151,12 +171,22 @@
             </h2>
           </div>
 
-          <!-- Heute gemacht Button -->
-          <div class="w-full max-w-xs">
+          <!-- Buttons für Heute gemacht & Etwas anderes getan -->
+          <div class="w-full max-w-sm space-y-2.5">
+            <!-- 1. Haupt-Button: Wochenfokus -->
             <button 
               id="btn-toggle-today" 
               onclick="App.toggleToday()" 
-              class="w-full py-4 px-6 rounded-2xl font-bold text-base sm:text-lg transition-all duration-300 transform active:scale-95 flex items-center justify-center gap-3"
+              class="w-full py-3.5 sm:py-4 px-6 rounded-2xl font-bold text-sm sm:text-base transition-all duration-300 transform active:scale-95 flex items-center justify-center gap-2.5"
+            >
+              <!-- Dynamischer Inhalt via JavaScript -->
+            </button>
+
+            <!-- 2. Zweiter Button: Etwas anderes getan (Selbstfürsorge & Wohlbefinden) -->
+            <button 
+              id="btn-toggle-care" 
+              onclick="App.toggleCareToday()" 
+              class="w-full py-3 sm:py-3.5 px-5 rounded-2xl font-bold text-xs sm:text-sm transition-all duration-300 transform active:scale-95 flex items-center justify-center gap-2.5 cursor-pointer"
             >
               <!-- Dynamischer Inhalt via JavaScript -->
             </button>

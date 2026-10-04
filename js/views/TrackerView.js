@@ -7,6 +7,10 @@ import { DateHelper } from '../services/DateHelper.js';
  * integrierten Monats-Mini-Kalenders:
  * - 4x2-Kachelraster (ideal für Smartphone & Desktop)
  * - 7-Zeilen-Listenansicht (großzügig und lesefreundlich)
+ * - 3 Zustände pro Tag:
+ *   * 'focus': Wochenfokus gemacht (Lila)
+ *   * 'care': Etwas anderes gut getan (Salbeigrün mit Blatt)
+ *   * 'open': Offen (Kontur)
  * - Fortschrittsanzeige ("X / 7 Tage")
  * - Mini-Kalender zur freien Auswahl des Starttags
  */
@@ -29,11 +33,11 @@ export class TrackerView {
    * @param {object} params
    * @param {object|null} params.activeIdea - Aktive Idee
    * @param {string[]} params.weekDates - 7 ISO-Datumsstrings
-   * @param {Function} params.isDateCompletedFn - Funktion (dateStr) => boolean
-   * @param {number} params.completedCount - Wie viele Tage sind erledigt
+   * @param {Function} params.getDayStatusFn - Funktion (dateStr) => 'focus'|'care'|'open'
+   * @param {number} params.completedCount - Wie viele Tage sind positiv (Fokus + Care)
    * @param {string} params.viewMode - 'grid' oder 'list'
    */
-  render({ activeIdea, weekDates, isDateCompletedFn, completedCount, viewMode }) {
+  render({ activeIdea, weekDates, getDayStatusFn, completedCount, viewMode }) {
     // 1. Überschrift
     if (this.headlineEl) {
       if (activeIdea) {
@@ -70,37 +74,47 @@ export class TrackerView {
     if (!this.daysContainer) return;
 
     if (viewMode === 'list') {
-      this.renderList(weekDates, isDateCompletedFn);
+      this.renderList(weekDates, getDayStatusFn);
     } else {
-      this.renderGrid(weekDates, isDateCompletedFn, completedCount);
+      this.renderGrid(weekDates, getDayStatusFn, completedCount);
     }
   }
 
   /**
    * Rendert die 7 Tage als vertikale Liste.
    */
-  renderList(weekDates, isDateCompletedFn) {
+  renderList(weekDates, getDayStatusFn) {
     let html = '<div class="space-y-2">';
 
     weekDates.forEach((dateStr) => {
-      const isDone = isDateCompletedFn(dateStr);
+      const status = getDayStatusFn(dateStr);
       const dayInfo = DateHelper.formatDayInfo(dateStr);
+
+      let itemBgClass = 'bg-white border-slate-100 hover:border-brand-200';
+      let statusText = 'Offen';
+      let statusTextColor = 'text-slate-400';
+
+      if (status === 'focus') {
+        itemBgClass = 'bg-surface-subtle border-brand-200 shadow-sm';
+        statusText = 'Gemacht';
+        statusTextColor = 'text-brand-700';
+      } else if (status === 'care') {
+        itemBgClass = 'bg-[#F1F6F2] border-[#C3D9C7] shadow-sm';
+        statusText = 'Gut getan';
+        statusTextColor = 'text-[#4A6E55]';
+      }
 
       html += `
         <button 
           type="button"
           onclick="App.toggleTrackerDay('${dateStr}')"
-          class="w-full rounded-2xl p-3 sm:p-4 flex items-center justify-between text-left transition-all duration-200 border ${
-            isDone 
-              ? 'bg-surface-subtle border-brand-200 shadow-sm' 
-              : 'bg-white border-slate-100 hover:border-brand-200'
-          } ${dayInfo.isToday ? 'ring-2 ring-brand-500' : ''}"
+          class="w-full rounded-2xl p-3 sm:p-4 flex items-center justify-between text-left transition-all duration-200 border ${itemBgClass} ${dayInfo.isToday ? 'ring-2 ring-brand-500' : ''}"
         >
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-xs ${
               dayInfo.isToday 
                 ? 'bg-brand-500 text-white' 
-                : 'bg-surface-subtle text-brand-700 border border-surface-border'
+                : (status === 'care' ? 'bg-[#E3EFE5] text-[#3B5B44] border border-[#C3D9C7]' : 'bg-surface-subtle text-brand-700 border border-surface-border')
             }">
               ${dayInfo.weekday}
             </div>
@@ -117,12 +131,21 @@ export class TrackerView {
           </div>
 
           <div class="flex items-center gap-3">
-            <span class="text-xs font-semibold ${isDone ? 'text-brand-700' : 'text-slate-400'}">
-              ${isDone ? 'Gemacht' : 'Offen'}
+            <span class="text-xs font-semibold ${statusTextColor}">
+              ${statusText}
             </span>
             <div class="w-10 h-10 flex items-center justify-center">
-              ${isDone ? `
+              ${status === 'focus' ? `
                 <img src="owl.png" alt="Gemacht" class="w-9 h-9 object-contain select-none transform transition-transform group-hover:scale-110">
+              ` : (status === 'care' ? `
+                <div class="relative w-9 h-9 flex items-center justify-center">
+                  <img src="owl.png" alt="Gut getan" class="w-full h-full object-contain select-none transform transition-transform group-hover:scale-110">
+                  <div class="absolute -top-1 -right-1 w-4 h-4 text-[#567758]">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66l.95-2.3c.48.17.98.3 1.34.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z"/>
+                    </svg>
+                  </div>
+                </div>
               ` : `
                 <svg viewBox="0 0 100 100" class="w-9 h-9 text-slate-300 stroke-current fill-none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M 28 30 C 20 18, 18 16, 32 18 C 40 20, 60 20, 68 18 C 82 16, 80 18, 72 30 C 86 44, 88 74, 78 86 C 70 94, 30 94, 22 86 C 12 74, 14 44, 28 30 Z" />
@@ -138,7 +161,7 @@ export class TrackerView {
                   <path d="M 35 91 Q 39 95 43 91" />
                   <path d="M 57 91 Q 61 95 65 91" />
                 </svg>
-              `}
+              `)}
             </div>
           </div>
         </button>
@@ -152,22 +175,25 @@ export class TrackerView {
   /**
    * Rendert die 7 Tage im responsiven Raster (4x2 auf dem Smartphone, 7 Spalten auf dem Desktop).
    */
-  renderGrid(weekDates, isDateCompletedFn, completedCount) {
+  renderGrid(weekDates, getDayStatusFn, completedCount) {
     let html = '<div class="grid grid-cols-4 sm:grid-cols-7 gap-2 sm:gap-2.5">';
 
     weekDates.forEach((dateStr) => {
-      const isDone = isDateCompletedFn(dateStr);
+      const status = getDayStatusFn(dateStr);
       const dayInfo = DateHelper.formatDayInfo(dateStr);
+
+      let tileBgClass = 'bg-white border-slate-100 hover:border-brand-200';
+      if (status === 'focus') {
+        tileBgClass = 'bg-surface-subtle border-brand-200 shadow-sm';
+      } else if (status === 'care') {
+        tileBgClass = 'bg-[#F1F6F2] border-[#C3D9C7] shadow-sm';
+      }
 
       html += `
         <button 
           type="button"
           onclick="App.toggleTrackerDay('${dateStr}')"
-          class="group relative rounded-2xl p-2.5 sm:p-3 flex flex-col items-center justify-between text-center transition-all duration-200 border ${
-            isDone 
-              ? 'bg-surface-subtle border-brand-200 shadow-sm' 
-              : 'bg-white border-slate-100 hover:border-brand-200'
-          } ${dayInfo.isToday ? 'ring-2 ring-brand-500 ring-offset-1' : ''}"
+          class="group relative rounded-2xl p-2.5 sm:p-3 flex flex-col items-center justify-between text-center transition-all duration-200 border ${tileBgClass} ${dayInfo.isToday ? 'ring-2 ring-brand-500 ring-offset-1' : ''}"
         >
           <div class="space-y-0.5">
             <span class="block text-xs font-bold ${dayInfo.isToday ? 'text-brand-700' : 'text-slate-600'}">
@@ -179,12 +205,25 @@ export class TrackerView {
           </div>
 
           <div class="my-2 sm:my-3 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center">
-            ${isDone ? `
+            ${status === 'focus' ? `
               <img 
                 src="owl.png" 
                 alt="Gemacht" 
                 class="w-full h-full object-contain select-none transform transition-transform group-hover:scale-110"
               >
+            ` : (status === 'care' ? `
+              <div class="relative w-full h-full flex items-center justify-center">
+                <img 
+                  src="owl.png" 
+                  alt="Gut getan" 
+                  class="w-full h-full object-contain select-none transform transition-transform group-hover:scale-110"
+                >
+                <div class="absolute -top-1 -right-1 w-4 h-4 text-[#567758] drop-shadow-sm">
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66l.95-2.3c.48.17.98.3 1.34.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z"/>
+                  </svg>
+                </div>
+              </div>
             ` : `
               <svg 
                 viewBox="0 0 100 100" 
@@ -206,7 +245,7 @@ export class TrackerView {
                 <path d="M 35 91 Q 39 95 43 91" />
                 <path d="M 57 91 Q 61 95 65 91" />
               </svg>
-            `}
+            `)}
           </div>
 
           <div>
@@ -214,15 +253,17 @@ export class TrackerView {
               <span class="inline-block px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-brand-100 text-brand-700">
                 Heute
               </span>
+            ` : (status === 'focus' ? `
+              <svg class="w-3 h-3 text-brand-600 inline" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+              </svg>
+            ` : (status === 'care' ? `
+              <svg class="w-3 h-3 text-[#567758] inline" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66l.95-2.3c.48.17.98.3 1.34.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z"/>
+              </svg>
             ` : `
-              <span class="inline-block text-[10px] font-medium text-slate-400">
-                ${isDone ? `
-                  <svg class="w-3 h-3 text-brand-600 inline" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
-                  </svg>
-                ` : '—'}
-              </span>
-            `}
+              <span class="inline-block text-[10px] font-medium text-slate-400">—</span>
+            `))}
           </div>
         </button>
       `;
