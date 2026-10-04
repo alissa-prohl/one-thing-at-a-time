@@ -420,6 +420,38 @@
   </div>
 
   <!-- ==================================================== -->
+  <!-- BESTÄTIGUNGS-MODAL FÜR LÖSCHEN                       -->
+  <!-- ==================================================== -->
+  <div id="modal-confirm-delete" class="fixed inset-0 z-[60] hidden bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
+    <div id="modal-confirm-dialog" class="bg-white w-full max-w-xs rounded-3xl p-6 shadow-2xl border border-surface-border text-center space-y-4">
+      <div class="w-12 h-12 mx-auto rounded-2xl bg-red-50 text-red-500 flex items-center justify-center">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+        </svg>
+      </div>
+      <div>
+        <h3 class="text-base font-bold text-[#35254D]">Wirklich löschen?</h3>
+      </div>
+      <div class="flex items-center gap-2 pt-1">
+        <button 
+          type="button" 
+          onclick="App.cancelDeleteConfirm()"
+          class="flex-1 py-2.5 px-3 rounded-xl bg-surface-subtle hover:bg-slate-200 text-slate-700 font-semibold text-xs transition-colors"
+        >
+          Abbrechen
+        </button>
+        <button 
+          type="button" 
+          onclick="App.confirmDeleteModalIdea()"
+          class="flex-1 py-2.5 px-3 rounded-xl bg-red-500 hover:bg-red-600 text-white font-semibold text-xs shadow-sm transition-colors"
+        >
+          Ja, löschen
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================================================== -->
   <!-- EIGENER INTEGRIERTER MINI-KALENDER (OHNE OS-POPUP) -->
   <!-- ==================================================== -->
   <div id="modal-calendar" class="fixed inset-0 z-50 hidden bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
@@ -1155,6 +1187,19 @@
 
       function deleteModalIdea() {
         if (!currentEditingIdeaId) return;
+        openDeleteConfirm();
+      }
+
+      function openDeleteConfirm() {
+        document.getElementById('modal-confirm-delete').classList.remove('hidden');
+      }
+
+      function cancelDeleteConfirm() {
+        document.getElementById('modal-confirm-delete').classList.add('hidden');
+      }
+
+      function confirmDeleteModalIdea() {
+        if (!currentEditingIdeaId) return;
 
         if (state.activeFocusId === currentEditingIdeaId) {
           state.activeFocusId = null;
@@ -1162,8 +1207,9 @@
 
         state.ideas = state.ideas.filter(i => i.id !== currentEditingIdeaId);
         saveState();
-        renderAll();
+        cancelDeleteConfirm();
         closeModal();
+        renderAll();
       }
 
       function escapeHtml(text) {
@@ -1182,7 +1228,6 @@
 
         // BEHEBUNG DES TEXTMARKIERUNGS-BUGS:
         // Das Modal schließt sich nur, wenn sowohl mousedown als auch mouseup direkt auf dem abgedunkelten Hintergrund stattfinden.
-        // Wenn man Text im Textfeld markiert und die Maus über den Rand zieht, schließt sich das Fenster NIE versehentlich.
         const modal = document.getElementById('modal-idea');
         const modalDialog = document.getElementById('modal-idea-dialog');
 
@@ -1201,7 +1246,7 @@
           isBackdropMouseDown = false;
         });
 
-        // Gleicher sicherer Klick-Schutz für das Kalender-Modal
+        // Klick-Schutz für das Kalender-Modal
         const calModal = document.getElementById('modal-calendar');
         const calDialog = document.getElementById('modal-calendar-dialog');
 
@@ -1220,8 +1265,28 @@
           isCalBackdropMouseDown = false;
         });
 
+        // Klick-Schutz für das Lösch-Bestätigungs-Modal
+        const confirmModal = document.getElementById('modal-confirm-delete');
+        const confirmDialog = document.getElementById('modal-confirm-dialog');
+
+        confirmDialog.addEventListener('click', (e) => e.stopPropagation());
+        confirmDialog.addEventListener('mousedown', (e) => e.stopPropagation());
+        confirmDialog.addEventListener('mouseup', (e) => e.stopPropagation());
+
+        let isConfirmBackdropMouseDown = false;
+        confirmModal.addEventListener('mousedown', (e) => {
+          isConfirmBackdropMouseDown = (e.target === confirmModal);
+        });
+        confirmModal.addEventListener('mouseup', (e) => {
+          if (isConfirmBackdropMouseDown && e.target === confirmModal) {
+            cancelDeleteConfirm();
+          }
+          isConfirmBackdropMouseDown = false;
+        });
+
         document.addEventListener('keydown', (e) => {
           if (e.key === 'Escape') {
+            cancelDeleteConfirm();
             closeModal();
             closeCalendarModal();
           }
@@ -1246,6 +1311,8 @@
         toggleModalFocus,
         saveModalIdea,
         deleteModalIdea,
+        cancelDeleteConfirm,
+        confirmDeleteModalIdea,
         setTrackerViewMode
       };
 
