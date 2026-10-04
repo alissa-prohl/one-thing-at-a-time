@@ -1,0 +1,64 @@
+/* ==========================================================================
+   One thing at a time - Globale Stylesheet-Datei
+   ==========================================================================
+   Enthält grundlegende Styles, Scrollbar-Anpassungen, Anti-Zoom-Regeln für
+   Smartphones sowie benutzerdefinierte Animationen.
+   ========================================================================== */
+
+/* Entfernt das graue Aufblitzen beim Antippen auf Touchscreens */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 
+ * iOS Safari Anti-Zoom Fix:
+ * Verhindert das lästige automatische Hereinzoomen beim Antippen von
+ * Eingabefeldern auf dem Smartphone (Safari zoomt, wenn font-size < 16px ist).
+ */
+html, body {
+  touch-action: manipulation;
+  -webkit-text-size-adjust: 100%;
+}
+
+input, textarea, select {
+  font-size: 16px !important;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* 
+ * Schlichte, elegante Scrollbars im Flieder-Design
+ */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #ECE0F5;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #D7C2EC;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #775BA4;
+}
+
+/* 
+ * Sanfte Schweb-Animation für das Eulen-Maskottchen
+ */
+@keyframes gentleFloat {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-gentle-float {
+  animation: gentleFloat 3.8s ease-in-out infinite;
+}
