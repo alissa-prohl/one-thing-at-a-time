@@ -72,7 +72,7 @@
   </script>
 
   <!-- Eigene Styles (Scrollbars, Anti-Zoom, Animationen) -->
-  <link rel="stylesheet" href="css/style.css?v=2">
+  <link rel="stylesheet" href="css/style.css?v=10">
 </head>
 
 <body class="h-full bg-surface-bg text-slate-700 font-sans antialiased flex flex-col selection:bg-brand-200 selection:text-brand-900">
@@ -80,12 +80,12 @@
   <!-- ========================================== -->
   <!-- KOPFZEILE & NAVIGATION                    -->
   <!-- ========================================== -->
-  <header class="w-full max-w-4xl mx-auto px-4 sm:px-6 pt-5 pb-3">
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+  <header class="w-full max-w-4xl mx-auto px-4 sm:px-6 pt-3 sm:pt-5 pb-2 sm:pb-3">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
       
       <!-- Logo & Titel (Antippen lädt die App sofort frisch neu) -->
-      <div onclick="window.location.reload()" title="Tippen zum Aktualisieren" class="flex items-center gap-2.5 cursor-pointer active:scale-95 transition-transform select-none">
-        <div class="w-10 h-10 rounded-2xl bg-white shadow-soft flex items-center justify-center p-1.5 border border-surface-border">
+      <div onclick="window.location.reload()" title="Tippen zum Aktualisieren" class="flex items-center gap-3 cursor-pointer active:scale-95 transition-transform select-none">
+        <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-white shadow-soft flex items-center justify-center p-1.5 border border-surface-border">
           <img src="owl.png" alt="Owl Mascot Logo" class="w-full h-full object-contain">
         </div>
         <h1 class="text-xl sm:text-2xl font-extrabold text-[#35254D] tracking-tight">
@@ -94,15 +94,15 @@
       </div>
 
       <!-- Navigation -->
-      <nav class="bg-white/90 backdrop-blur-sm p-1.5 rounded-2xl border border-surface-border shadow-soft flex items-center gap-1 self-start sm:self-auto">
-        <button id="nav-btn-home" onclick="App.navigate('home')" class="nav-tab px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 flex items-center gap-1.5 bg-brand-500 text-white shadow-pill">
+      <nav class="bg-white/95 backdrop-blur-sm p-1.5 rounded-2xl border border-surface-border shadow-soft flex items-center gap-1.5 self-start sm:self-auto">
+        <button id="nav-btn-home" onclick="App.navigate('home')" class="nav-tab px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 flex items-center gap-1.5 bg-brand-500 text-white shadow-pill">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
           </svg>
           <span>Startseite</span>
         </button>
 
-        <button id="nav-btn-ideas" onclick="App.navigate('ideas')" class="nav-tab px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 flex items-center gap-1.5 text-slate-600 hover:text-brand-700 hover:bg-brand-50">
+        <button id="nav-btn-ideas" onclick="App.navigate('ideas')" class="nav-tab px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 flex items-center gap-1.5 text-slate-600 hover:text-brand-700 hover:bg-brand-50">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
           </svg>
@@ -110,7 +110,7 @@
           <span id="badge-ideas-count" class="ml-1 text-[11px] font-bold px-2 py-0.5 rounded-full bg-brand-100 text-brand-700">0</span>
         </button>
 
-        <button id="nav-btn-tracker" onclick="App.navigate('tracker')" class="nav-tab px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 flex items-center gap-1.5 text-slate-600 hover:text-brand-700 hover:bg-brand-50">
+        <button id="nav-btn-tracker" onclick="App.navigate('tracker')" class="nav-tab px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 flex items-center gap-1.5 text-slate-600 hover:text-brand-700 hover:bg-brand-50">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
           </svg>
@@ -124,18 +124,24 @@
   <!-- ========================================== -->
   <!-- HAUPTINHALT                                -->
   <!-- ========================================== -->
-  <main class="flex-1 w-full max-w-4xl mx-auto px-4 sm:px-6 py-3 flex flex-col justify-center">
+  <main class="flex-1 w-full max-w-4xl mx-auto px-4 sm:px-6 pt-1 sm:pt-2 pb-4 sm:pb-6 flex flex-col justify-start">
 
     <!-- ========================================== -->
     <!-- BEREICH 1: STARTSEITE                      -->
     <!-- ========================================== -->
-    <section id="section-home" class="w-full">
-      <div class="bg-white rounded-3xl p-6 sm:p-12 shadow-soft border border-surface-border text-center relative overflow-hidden">
+    <section id="section-home" class="w-full max-w-2xl mx-auto flex-1 flex flex-col justify-start">
+      <!-- 1. Mikrohabit-Container über der Eule (höher positioniert, substanzielleres Fenster) -->
+      <div id="home-microhabits-container" class="w-full mb-4 sm:mb-5 shrink-0 flex flex-col items-stretch gap-3">
+        <!-- Dynamisch durch HomeView befüllt (z.B. "15 Minuten musizieren") -->
+      </div>
+
+      <!-- 2. Hauptkarte mit Eule (Fokusfenster: höher & länger, Eule deutlich größer) -->
+      <div class="flex-1 w-full bg-white rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 md:p-10 shadow-soft border border-surface-border text-center relative overflow-hidden flex flex-col justify-between items-center min-h-[500px] xs:min-h-[540px] sm:min-h-[590px] md:min-h-[640px]">
         
-        <div class="relative z-10 flex flex-col items-center max-w-lg mx-auto">
+        <div class="relative z-10 flex flex-col items-center justify-between w-full h-full max-w-lg mx-auto flex-1 py-1 sm:py-2">
           
-          <!-- Eulen-Maskottchen (Groß, transparentes PNG, farblos wenn nicht erledigt, klickbar für 'Heute gemacht') -->
-          <div class="relative w-64 h-64 sm:w-72 sm:h-72 md:w-80 md:h-80 mb-5 flex items-center justify-center">
+          <!-- Eulen-Maskottchen (Deutlich größer & präsenter) -->
+          <div class="relative w-[260px] h-[260px] xs:w-[300px] xs:h-[300px] sm:w-[360px] sm:h-[360px] md:w-[420px] md:h-[420px] max-w-[92%] my-auto flex items-center justify-center">
             <div 
               id="home-owl-wrapper" 
               onclick="App.handleOwlClick()" 
@@ -143,59 +149,28 @@
               class="relative w-full h-full animate-gentle-float select-none transition-all duration-500 flex items-center justify-center cursor-pointer group active:scale-95"
             >
               <img 
-                id="home-owl-mascot"
+                id="home-owl-mascot" 
                 src="owl.png" 
                 alt="Owl Mascot" 
                 class="w-full h-full object-contain select-none transition-all duration-500 pointer-events-none"
               >
-              <!-- Feines Blatt-Overlay am rechten Feder-Ohr (exakt nach Referenzbild) -->
-              <div 
-                id="home-owl-leaf-badge" 
-                class="absolute top-[6%] right-[11%] w-14 h-14 sm:w-16 sm:h-16 pointer-events-none transition-all duration-500 owl-leaf-hidden"
-              >
-                <svg viewBox="0 0 100 100" fill="none" class="w-full h-full drop-shadow-md overflow-visible">
-                  <!-- Blatt-Körper mit kräftiger dunkler Kontur -->
-                  <path 
-                    d="M 22 20 C 44 10, 74 22, 88 48 C 96 64, 88 82, 74 85 C 50 90, 26 70, 22 20 Z" 
-                    fill="#52C439" 
-                    stroke="#18181B" 
-                    stroke-width="5" 
-                    stroke-linejoin="round" 
-                    stroke-linecap="round"
-                  />
-                  <!-- Hellgrüner Glanzstreifen am oberen Rand -->
-                  <path 
-                    d="M 25 22 C 42 15, 68 24, 82 46 C 74 38, 48 24, 25 22 Z" 
-                    fill="#98EB72" 
-                    opacity="0.95"
-                  />
-                  <!-- Stängel und Mittelrippe -->
-                  <path 
-                    d="M 92 98 C 88 88, 80 80, 74 72 C 64 58, 52 46, 40 34" 
-                    fill="none" 
-                    stroke="#18181B" 
-                    stroke-width="5" 
-                    stroke-linecap="round"
-                  />
-                </svg>
-              </div>
             </div>
           </div>
 
-          <!-- Fokus-Titel direkt unter der Eule (Keine Kommentare) -->
-          <div class="mb-8">
-            <h2 id="home-quote-text" class="text-2xl sm:text-3xl font-extrabold text-[#35254D] tracking-tight leading-snug">
+          <!-- Fokus-Titel direkt unter der Eule -->
+          <div class="my-3 sm:my-4">
+            <h2 id="home-quote-text" class="text-2xl sm:text-3xl md:text-4xl font-black text-[#35254D] tracking-tight leading-snug">
               Kein Fokus gewählt
             </h2>
           </div>
 
           <!-- Buttons für Heute gemacht & Etwas anderes getan -->
-          <div class="w-full max-w-sm space-y-2.5">
+          <div class="w-full max-w-sm sm:max-w-md space-y-3 sm:space-y-3.5 mt-auto pt-2">
             <!-- 1. Haupt-Button: Wochenfokus -->
             <button 
               id="btn-toggle-today" 
               onclick="App.toggleToday()" 
-              class="w-full py-3.5 sm:py-4 px-6 rounded-2xl font-bold text-sm sm:text-base transition-all duration-300 transform active:scale-95 flex items-center justify-center gap-2.5"
+              class="w-full py-3.5 sm:py-4 px-6 sm:px-8 rounded-2xl sm:rounded-3xl font-extrabold text-sm sm:text-base md:text-lg transition-all duration-300 transform active:scale-95 flex items-center justify-center gap-2.5"
             >
               <!-- Dynamischer Inhalt via JavaScript -->
             </button>
@@ -204,7 +179,7 @@
             <button 
               id="btn-toggle-care" 
               onclick="App.toggleCareToday()" 
-              class="w-full py-3 sm:py-3.5 px-5 rounded-2xl font-bold text-xs sm:text-sm transition-all duration-300 transform active:scale-95 flex items-center justify-center gap-2.5 cursor-pointer"
+              class="w-full py-3 sm:py-3.5 px-5 sm:px-7 rounded-2xl sm:rounded-3xl font-bold text-xs sm:text-sm md:text-base transition-all duration-300 transform active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
             >
               <!-- Dynamischer Inhalt via JavaScript -->
             </button>
@@ -218,34 +193,34 @@
     <!-- ========================================== -->
     <!-- BEREICH 2: GEDANKEN-PARKPLATZ              -->
     <!-- ========================================== -->
-    <section id="section-ideas" class="hidden space-y-4">
-      <div class="bg-white rounded-3xl p-5 sm:p-8 shadow-soft border border-surface-border space-y-5">
+    <section id="section-ideas" class="hidden w-full max-w-3xl mx-auto space-y-4">
+      <div class="bg-white rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-10 shadow-soft border border-surface-border space-y-6 min-h-[480px]">
         
-        <div class="flex items-center justify-between border-b border-slate-100 pb-4">
-          <h2 class="text-xl sm:text-2xl font-extrabold text-[#35254D] tracking-tight">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-4 sm:pb-5">
+          <h2 class="text-xl sm:text-2xl md:text-3xl font-black text-[#35254D] tracking-tight">
             Gedanken-Parkplatz
           </h2>
-          <span id="ideas-stat-total" class="text-xs font-bold text-brand-700 bg-surface-subtle border border-surface-border px-3 py-1 rounded-full">
+          <span id="ideas-stat-total" class="text-xs sm:text-sm font-bold text-brand-700 bg-surface-subtle border border-surface-border px-3.5 py-1.5 rounded-full">
             0 Ideen
           </span>
         </div>
 
         <!-- Schnell-Eingabe -->
-        <form id="form-quick-add" onsubmit="App.handleQuickAdd(event)" class="flex flex-col sm:flex-row gap-2.5">
+        <form id="form-quick-add" onsubmit="App.handleQuickAdd(event)" class="flex flex-col sm:flex-row gap-3">
           <input 
             type="text" 
             id="input-quick-title"
             placeholder="Neue Idee oder Projekt notieren..."
             style="font-size: 16px !important;"
-            class="flex-1 bg-surface-subtle border border-surface-border rounded-2xl px-4 py-3 text-base text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all"
+            class="flex-1 bg-surface-subtle border border-surface-border rounded-2xl px-5 py-3.5 sm:py-4 text-base text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all"
             required
             autocomplete="off"
           >
           <button 
             type="submit" 
-            class="bg-brand-500 hover:bg-brand-600 text-white font-bold text-sm px-6 py-3 rounded-2xl shadow-pill transition-all duration-200 flex items-center justify-center gap-2 whitespace-nowrap active:scale-95"
+            class="bg-brand-500 hover:bg-brand-600 text-white font-extrabold text-sm sm:text-base px-7 py-3.5 sm:py-4 rounded-2xl shadow-pill transition-all duration-200 flex items-center justify-center gap-2 whitespace-nowrap active:scale-95 cursor-pointer"
           >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
             </svg>
             <span>Parken</span>
@@ -253,15 +228,16 @@
         </form>
 
         <!-- Liste -->
-        <div id="ideas-list-container" class="space-y-2.5">
+        <div id="ideas-list-container" class="space-y-3 sm:space-y-3.5">
           <!-- Dynamischer Inhalt -->
         </div>
 
-        <div id="ideas-empty-state" class="hidden py-8 text-center space-y-3">
-          <div class="w-16 h-16 mx-auto rounded-3xl bg-surface-subtle border border-surface-border flex items-center justify-center p-3">
-            <img src="owl.png" alt="Eule" class="w-full h-full object-contain opacity-70">
+        <div id="ideas-empty-state" class="hidden py-12 text-center space-y-4">
+          <div class="w-20 h-20 mx-auto rounded-3xl bg-surface-subtle border border-surface-border flex items-center justify-center p-3.5 shadow-sm">
+            <img src="owl.png" alt="Eule" class="w-full h-full object-contain opacity-75">
           </div>
-          <h3 class="text-base font-bold text-slate-700">Dein Gedanken-Parkplatz ist leer</h3>
+          <h3 class="text-base sm:text-lg font-bold text-slate-700">Dein Gedanken-Parkplatz ist leer</h3>
+          <p class="text-xs sm:text-sm text-slate-400 max-w-sm mx-auto">Notiere hier Gedanken, die dich ablenken, um deinen Kopf für den aktuellen Fokus frei zu halten.</p>
         </div>
 
       </div>
@@ -270,28 +246,28 @@
     <!-- ========================================== -->
     <!-- BEREICH 3: WOCHEN-TRACKER                  -->
     <!-- ========================================== -->
-    <section id="section-tracker" class="hidden space-y-4">
-      <div class="bg-white rounded-3xl p-4 sm:p-8 shadow-soft border border-surface-border space-y-5">
+    <section id="section-tracker" class="hidden w-full max-w-4xl mx-auto space-y-4">
+      <div class="bg-white rounded-[2rem] sm:rounded-[2.5rem] p-5 sm:p-8 md:p-10 shadow-soft border border-surface-border space-y-6 min-h-[480px]">
         
         <!-- Header mit Fokus-Titel & flexibler, ästhetischer Wochen-Navigation -->
-        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3.5 border-b border-slate-100 pb-4">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3.5 border-b border-slate-100 pb-4 sm:pb-5">
           <div>
-            <h2 id="tracker-focus-headline" class="text-lg sm:text-2xl font-extrabold text-[#35254D] tracking-tight">
+            <h2 id="tracker-focus-headline" class="text-xl sm:text-2xl md:text-3xl font-black text-[#35254D] tracking-tight">
               Fokus der Woche: Kein Fokus gewählt
             </h2>
           </div>
 
-          <!-- Wochen- & Startdatum-Steuerung (Schlank, ruhig, ohne Überladung) -->
-          <div class="flex items-center gap-2 self-start lg:self-auto flex-wrap sm:flex-nowrap">
+          <!-- Wochen- & Startdatum-Steuerung -->
+          <div class="flex items-center gap-2.5 self-start lg:self-auto flex-wrap sm:flex-nowrap">
             
-            <div class="flex items-center gap-1 bg-surface-subtle p-1.5 rounded-2xl border border-surface-border">
+            <div class="flex items-center gap-1.5 bg-surface-subtle p-1.5 sm:p-2 rounded-2xl border border-surface-border">
               <!-- Woche zurück -->
               <button 
                 onclick="App.shiftStartDate(-7)" 
                 title="Vorherige Woche" 
-                class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-white hover:bg-brand-50 text-slate-700 flex items-center justify-center shadow-sm border border-surface-border transition-colors"
+                class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-white hover:bg-brand-50 text-slate-700 flex items-center justify-center shadow-sm border border-surface-border transition-colors cursor-pointer"
               >
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
                 </svg>
               </button>
@@ -300,9 +276,9 @@
               <button 
                 onclick="App.openCalendarModal()"
                 title="Startdatum frei wählen"
-                class="px-2.5 sm:px-3 py-1 text-xs font-bold text-brand-700 hover:text-brand-900 bg-white rounded-xl shadow-sm border border-surface-border hover:bg-brand-50 flex items-center gap-1.5 transition-colors"
+                class="px-3 sm:px-3.5 py-1.5 text-xs sm:text-sm font-bold text-brand-700 hover:text-brand-900 bg-white rounded-xl shadow-sm border border-surface-border hover:bg-brand-50 flex items-center gap-2 transition-colors cursor-pointer"
               >
-                <svg class="w-3.5 h-3.5 text-brand-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <svg class="w-4 h-4 text-brand-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                 </svg>
                 <span id="tracker-week-range-label">4. Okt – 10. Okt</span>
@@ -312,9 +288,9 @@
               <button 
                 onclick="App.shiftStartDate(7)" 
                 title="Nächste Woche" 
-                class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-white hover:bg-brand-50 text-slate-700 flex items-center justify-center shadow-sm border border-surface-border transition-colors"
+                class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-white hover:bg-brand-50 text-slate-700 flex items-center justify-center shadow-sm border border-surface-border transition-colors cursor-pointer"
               >
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
                 </svg>
               </button>
@@ -323,25 +299,25 @@
               <button 
                 onclick="App.setStartDateToToday()" 
                 title="Auf heute setzen"
-                class="px-2.5 py-1 rounded-xl bg-brand-500 text-white text-xs font-bold shadow-sm hover:bg-brand-600 transition-colors"
+                class="px-3 py-1.5 rounded-xl bg-brand-500 text-white text-xs sm:text-sm font-bold shadow-sm hover:bg-brand-600 transition-colors cursor-pointer"
               >
                 Heute
               </button>
             </div>
 
-            <!-- Ansicht-Umschaltung: Kacheln oder Liste (Besonders praktisch auf dem Smartphone) -->
-            <div class="flex items-center gap-1 bg-surface-subtle p-1 rounded-xl border border-surface-border text-xs font-semibold">
+            <!-- Ansicht-Umschaltung: Kacheln oder Liste -->
+            <div class="flex items-center gap-1 bg-surface-subtle p-1.5 rounded-xl border border-surface-border text-xs sm:text-sm font-bold">
               <button 
                 id="btn-view-grid" 
                 onclick="App.setTrackerViewMode('grid')" 
-                class="px-2.5 py-1 rounded-lg transition-colors bg-white text-brand-700 shadow-sm"
+                class="px-3 py-1.5 rounded-lg transition-colors bg-white text-brand-700 shadow-sm cursor-pointer"
               >
                 Kacheln
               </button>
               <button 
                 id="btn-view-list" 
                 onclick="App.setTrackerViewMode('list')" 
-                class="px-2.5 py-1 rounded-lg transition-colors text-slate-500 hover:text-brand-700"
+                class="px-3 py-1.5 rounded-lg transition-colors text-slate-500 hover:text-brand-700 cursor-pointer"
               >
                 Liste
               </button>
@@ -356,11 +332,11 @@
         </div>
 
         <!-- Statistik-Leiste -->
-        <div class="pt-3.5 border-t border-slate-100 flex items-center justify-between">
-          <span class="text-xs sm:text-sm font-bold text-slate-600">Gemacht</span>
-          <div class="flex items-center gap-1.5">
-            <span id="tracker-score-days" class="text-xl sm:text-2xl font-black text-brand-700">0</span>
-            <span class="text-xs sm:text-sm font-bold text-slate-400">/ 7 Tage</span>
+        <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
+          <span class="text-sm sm:text-base font-bold text-slate-600">Gemacht</span>
+          <div class="flex items-center gap-2">
+            <span id="tracker-score-days" class="text-2xl sm:text-3xl font-black text-brand-700">0</span>
+            <span class="text-sm sm:text-base font-bold text-slate-400">/ 7 Tage</span>
           </div>
         </div>
 
@@ -373,12 +349,12 @@
   <!-- DETAIL-MODAL FÜR GEDANKEN-PARKPLATZ        -->
   <!-- ========================================== -->
   <div id="modal-idea" class="fixed inset-0 z-50 hidden bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
-    <div id="modal-idea-dialog" class="bg-white w-full max-w-lg rounded-3xl p-5 sm:p-8 shadow-2xl border border-surface-border space-y-5">
+    <div id="modal-idea-dialog" class="bg-white w-full max-w-lg rounded-[2rem] p-6 sm:p-8 shadow-2xl border border-surface-border space-y-6">
       
-      <div class="flex items-center justify-between border-b border-slate-100 pb-3.5">
-        <h3 class="text-lg sm:text-xl font-bold text-[#35254D]">Idee bearbeiten</h3>
-        <button onclick="App.closeModal()" class="w-8 h-8 rounded-xl bg-surface-subtle hover:bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center transition-colors">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+        <h3 class="text-xl sm:text-2xl font-black text-[#35254D]">Idee bearbeiten</h3>
+        <button onclick="App.closeModal()" class="w-9 h-9 rounded-xl bg-surface-subtle hover:bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center transition-colors cursor-pointer">
+          <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
           </svg>
         </button>
@@ -387,55 +363,70 @@
       <form id="form-modal-idea" onsubmit="App.saveModalIdea(event)" class="space-y-4">
         <input type="hidden" id="modal-idea-id">
 
-        <div class="space-y-1">
-          <label for="modal-input-what" class="block text-xs font-bold text-slate-700">
+        <div class="space-y-1.5">
+          <label for="modal-input-what" class="block text-xs sm:text-sm font-bold text-slate-700">
             Was genau möchte ich tun?
           </label>
           <textarea 
             id="modal-input-what" 
             rows="3"
             style="font-size: 16px !important;"
-            class="w-full bg-surface-subtle border border-surface-border rounded-2xl p-3 text-base text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all resize-none"
+            class="w-full bg-surface-subtle border border-surface-border rounded-2xl p-3.5 sm:p-4 text-base text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all resize-none"
             required
           ></textarea>
         </div>
 
-        <div class="space-y-1">
-          <label for="modal-input-why" class="block text-xs font-bold text-slate-700">
+        <div class="space-y-1.5">
+          <label for="modal-input-why" class="block text-xs sm:text-sm font-bold text-slate-700">
             Warum möchte ich das tun?
           </label>
           <textarea 
             id="modal-input-why" 
             rows="3"
             style="font-size: 16px !important;"
-            class="w-full bg-surface-subtle border border-surface-border rounded-2xl p-3 text-base text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all resize-none"
+            class="w-full bg-surface-subtle border border-surface-border rounded-2xl p-3.5 sm:p-4 text-base text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all resize-none"
           ></textarea>
         </div>
 
-        <div class="space-y-2 pt-1">
+        <div class="space-y-2.5 pt-2">
           <button 
             type="button" 
             id="btn-modal-toggle-focus" 
             onclick="App.toggleModalFocus()"
-            class="w-full py-3 px-4 rounded-2xl font-bold text-sm transition-all duration-200 flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 text-white shadow-pill"
+            class="w-full py-3.5 px-5 rounded-2xl font-bold text-xs sm:text-sm transition-all duration-200 flex items-center justify-center gap-2 bg-surface-subtle hover:bg-brand-100 text-brand-700 border border-surface-border shadow-sm active:scale-95 cursor-pointer"
           >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <svg class="w-4 h-4 sm:w-5 sm:h-5 text-brand-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
             </svg>
             <span id="modal-focus-btn-text">Als Wochenfokus wählen</span>
           </button>
 
-          <div class="flex items-center gap-2 pt-1">
+          <button 
+            type="button" 
+            id="btn-modal-toggle-microhabit" 
+            onclick="App.toggleModalMicrohabit()"
+            class="w-full py-3.5 px-5 rounded-2xl font-bold text-xs sm:text-sm transition-all duration-200 flex items-center justify-center gap-2 bg-surface-subtle hover:bg-brand-100 text-brand-700 border border-surface-border shadow-sm active:scale-95 cursor-pointer"
+          >
+            <svg class="w-4 h-4 sm:w-5 sm:h-5 text-brand-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+            </svg>
+            <span id="modal-microhabit-btn-text">Als Mikrohabit hinzufügen</span>
+          </button>
+
+          <div class="flex items-center gap-2.5 pt-2">
             <button 
               type="submit" 
-              class="flex-1 py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-semibold text-xs transition-colors"
+              class="flex-1 py-3.5 px-5 rounded-2xl bg-brand-500 hover:bg-brand-600 text-white font-extrabold text-xs sm:text-sm shadow-pill transition-all active:scale-95 cursor-pointer flex items-center justify-center gap-2"
             >
-              Speichern
+              <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+              </svg>
+              <span>Speichern</span>
             </button>
             <button 
               type="button" 
               onclick="App.deleteModalIdea()"
-              class="py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-red-50 text-slate-600 hover:text-red-600 font-semibold text-xs transition-colors"
+              class="py-3.5 px-5 rounded-2xl bg-slate-100 hover:bg-red-50 text-slate-600 hover:text-red-600 font-bold text-xs sm:text-sm transition-colors cursor-pointer flex items-center justify-center"
             >
               Löschen
             </button>
@@ -520,7 +511,7 @@
   <!-- ========================================== -->
   <!-- MODULARE APP-LOGIK (ES6-MODULE)           -->
   <!-- ========================================== -->
-  <script type="module" src="js/app.js?v=2"></script>
+  <script type="module" src="js/app.js?v=10"></script>
 
 </body>
 </html>

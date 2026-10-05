@@ -25,7 +25,9 @@ export class StorageService {
           completedDates: Array.isArray(parsed.completedDates) ? parsed.completedDates : [],
           careDates: Array.isArray(parsed.careDates) ? parsed.careDates : [],
           ideas: Array.isArray(parsed.ideas) ? parsed.ideas : [],
-          trackerViewMode: parsed.trackerViewMode || 'grid'
+          trackerViewMode: parsed.trackerViewMode || 'grid',
+          activeMicrohabitIds: Array.isArray(parsed.activeMicrohabitIds) ? parsed.activeMicrohabitIds : [],
+          completedMicrohabitDates: (parsed.completedMicrohabitDates && typeof parsed.completedMicrohabitDates === 'object') ? parsed.completedMicrohabitDates : {}
         };
       }
     } catch (error) {
@@ -39,7 +41,9 @@ export class StorageService {
       completedDates: [],
       careDates: [],
       ideas: [],
-      trackerViewMode: 'grid'
+      trackerViewMode: 'grid',
+      activeMicrohabitIds: [],
+      completedMicrohabitDates: {}
     };
   }
 
@@ -55,7 +59,9 @@ export class StorageService {
         completedDates: data.completedDates || [],
         careDates: data.careDates || [],
         ideas: data.ideas || [],
-        trackerViewMode: data.trackerViewMode || 'grid'
+        trackerViewMode: data.trackerViewMode || 'grid',
+        activeMicrohabitIds: data.activeMicrohabitIds || [],
+        completedMicrohabitDates: data.completedMicrohabitDates || {}
       };
       localStorage.setItem(this.STORAGE_KEY, JSON.stringify(dataToSave));
     } catch (error) {

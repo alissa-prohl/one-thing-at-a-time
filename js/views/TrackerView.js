@@ -1,4 +1,4 @@
-import { DateHelper } from '../services/DateHelper.js?v=2';
+import { DateHelper } from '../services/DateHelper.js?v=10';
 
 /**
  * TrackerView
@@ -7,10 +7,10 @@ import { DateHelper } from '../services/DateHelper.js?v=2';
  * integrierten Monats-Mini-Kalenders:
  * - 4x2-Kachelraster (ideal für Smartphone & Desktop)
  * - 7-Zeilen-Listenansicht (großzügig und lesefreundlich)
- * - 3 Zustände pro Tag:
- *   * 'focus': Wochenfokus gemacht (Lila)
- *   * 'care': Etwas anderes gut getan (Salbeigrün mit Blatt)
- *   * 'open': Offen (Kontur)
+ * - Harmonische Eulen-Zustände pro Tag:
+ *   * Vollfarbige Eule: Fokus ODER "Etwas anderes getan"
+ *   * Vollfarbige Eule MIT Blatt am Ohr: Zusätzlich Mikrohabit geschafft
+ *   * Graue Kontur: Offener Tag
  * - Fortschrittsanzeige ("X / 7 Tage")
  * - Mini-Kalender zur freien Auswahl des Starttags
  */
@@ -33,11 +33,11 @@ export class TrackerView {
    * @param {object} params
    * @param {object|null} params.activeIdea - Aktive Idee
    * @param {string[]} params.weekDates - 7 ISO-Datumsstrings
-   * @param {Function} params.getDayStatusFn - Funktion (dateStr) => 'focus'|'care'|'open'
-   * @param {number} params.completedCount - Wie viele Tage sind positiv (Fokus + Care)
+   * @param {Function} params.getMascotStatusFn - Funktion (dateStr) => { colored: boolean, hasFocus: boolean, hasCare: boolean, hasMain: boolean, hasMicro: boolean, plant: boolean }
+   * @param {number} params.completedCount - Wie viele Tage sind positiv
    * @param {string} params.viewMode - 'grid' oder 'list'
    */
-  render({ activeIdea, weekDates, getDayStatusFn, completedCount, viewMode }) {
+  render({ activeIdea, weekDates, getMascotStatusFn, completedCount, viewMode }) {
     // 1. Überschrift
     if (this.headlineEl) {
       if (activeIdea) {
@@ -74,55 +74,67 @@ export class TrackerView {
     if (!this.daysContainer) return;
 
     if (viewMode === 'list') {
-      this.renderList(weekDates, getDayStatusFn);
+      this.renderList(weekDates, getMascotStatusFn);
     } else {
-      this.renderGrid(weekDates, getDayStatusFn, completedCount);
+      this.renderGrid(weekDates, getMascotStatusFn, completedCount);
     }
   }
 
   /**
    * Rendert die 7 Tage als vertikale Liste.
    */
-  renderList(weekDates, getDayStatusFn) {
-    let html = '<div class="space-y-2">';
+  renderList(weekDates, getMascotStatusFn) {
+    let html = '<div class="space-y-3">';
 
     weekDates.forEach((dateStr) => {
-      const status = getDayStatusFn(dateStr);
+      const mascot = getMascotStatusFn ? getMascotStatusFn(dateStr) : { colored: false, hasFocus: false, hasCare: false, hasMicro: false };
       const dayInfo = DateHelper.formatDayInfo(dateStr);
 
       let itemBgClass = 'bg-white border-slate-100 hover:border-brand-200';
       let statusText = 'Offen';
       let statusTextColor = 'text-slate-400';
 
-      if (status === 'focus') {
+      if (mascot.hasFocus && mascot.hasMicro) {
         itemBgClass = 'bg-surface-subtle border-brand-200 shadow-sm';
-        statusText = 'Gemacht';
+        statusText = 'Fokus + Mikrohabit';
         statusTextColor = 'text-brand-700';
-      } else if (status === 'care') {
-        itemBgClass = 'bg-[#F1F6F2] border-[#C3D9C7] shadow-sm';
-        statusText = 'Etwas anderes gemacht';
-        statusTextColor = 'text-[#3E7329]';
+      } else if (mascot.hasCare && mascot.hasMicro) {
+        itemBgClass = 'bg-surface-subtle border-brand-200 shadow-sm';
+        statusText = 'Gut getan + Mikrohabit';
+        statusTextColor = 'text-brand-700';
+      } else if (mascot.hasFocus) {
+        itemBgClass = 'bg-surface-subtle border-brand-200 shadow-sm';
+        statusText = 'Fokus geschafft';
+        statusTextColor = 'text-brand-700';
+      } else if (mascot.hasCare) {
+        itemBgClass = 'bg-surface-subtle border-brand-200 shadow-sm';
+        statusText = 'Gut getan';
+        statusTextColor = 'text-brand-700';
+      } else if (mascot.hasMicro) {
+        itemBgClass = 'bg-surface-subtle border-brand-200 shadow-sm';
+        statusText = 'Mikrohabit geschafft';
+        statusTextColor = 'text-brand-700';
       }
 
       html += `
         <button 
           type="button"
           onclick="App.toggleTrackerDay('${dateStr}')"
-          class="w-full rounded-2xl p-3 sm:p-4 flex items-center justify-between text-left transition-all duration-200 border ${itemBgClass} ${dayInfo.isToday ? 'ring-2 ring-brand-500' : ''}"
+          class="w-full rounded-2xl sm:rounded-3xl p-4 sm:p-5 flex items-center justify-between text-left transition-all duration-200 border cursor-pointer ${itemBgClass} ${dayInfo.isToday ? 'ring-2 ring-brand-500 ring-offset-2' : ''}"
         >
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-xs ${
+          <div class="flex items-center gap-3.5">
+            <div class="w-11 h-11 rounded-xl sm:rounded-2xl flex items-center justify-center font-extrabold text-xs sm:text-sm ${
               dayInfo.isToday 
-                ? 'bg-brand-500 text-white' 
-                : (status === 'care' ? 'bg-[#E3EFE5] text-[#2F5F20] border border-[#C3D9C7]' : 'bg-surface-subtle text-brand-700 border border-surface-border')
+                ? 'bg-brand-500 text-white shadow-xs' 
+                : (mascot.colored ? 'bg-surface-subtle text-brand-700 border border-surface-border' : 'bg-surface-subtle text-slate-400 border border-surface-border')
             }">
               ${dayInfo.weekday}
             </div>
             <div>
               <div class="flex items-center gap-2">
-                <span class="text-sm font-bold text-slate-800">${dayInfo.formattedDate}</span>
+                <span class="text-base sm:text-lg font-bold text-slate-800">${dayInfo.formattedDate}</span>
                 ${dayInfo.isToday ? `
-                  <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-brand-100 text-brand-700">
+                  <span class="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-brand-100 text-brand-700">
                     Heute
                   </span>
                 ` : ''}
@@ -130,26 +142,34 @@ export class TrackerView {
             </div>
           </div>
 
-          <div class="flex items-center gap-3">
-            <span class="text-xs font-semibold ${statusTextColor}">
-              ${statusText}
-            </span>
-            <div class="w-10 h-10 flex items-center justify-center">
-              ${status === 'focus' ? `
-                <img src="owl.png" alt="Gemacht" class="w-9 h-9 object-contain select-none transform transition-transform group-hover:scale-110">
-              ` : (status === 'care' ? `
-                <div class="relative w-9 h-9 flex items-center justify-center">
-                  <img src="owl.png" alt="Etwas anderes gemacht" class="w-full h-full object-contain select-none transform transition-transform group-hover:scale-110">
-                  <div class="absolute -top-1 -right-1 w-4 h-4 drop-shadow-sm">
-                    <svg viewBox="0 0 100 100" fill="none" class="w-full h-full overflow-visible">
-                      <path d="M 22 20 C 44 10, 74 22, 88 48 C 96 64, 88 82, 74 85 C 50 90, 26 70, 22 20 Z" fill="#52C439" stroke="#18181B" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>
-                      <path d="M 25 22 C 42 15, 68 24, 82 46 C 74 38, 48 24, 25 22 Z" fill="#98EB72"/>
-                      <path d="M 92 98 C 88 88, 80 80, 74 72 C 64 58, 52 46, 40 34" fill="none" stroke="#18181B" stroke-width="8" stroke-linecap="round"/>
-                    </svg>
-                  </div>
-                </div>
+          <div class="flex items-center gap-3.5">
+            <div class="flex items-center gap-2 text-right">
+              ${mascot.hasFocus ? `
+                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-brand-600 inline shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" title="Fokus geschafft">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                </svg>
+              ` : ''}
+              ${mascot.hasCare ? `
+                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-brand-600 inline shrink-0" fill="currentColor" viewBox="0 0 24 24" title="Etwas anderes getan, was mir gut getan hat">
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+              ` : ''}
+              ${mascot.hasMicro ? `
+                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-brand-600 inline shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" title="Mikrohabit geschafft">
+                  <path d="M12 22v-9" />
+                  <path d="M12 13c0-3.5 2.5-6 7-6 0 4.5-2.5 7-7 6z" />
+                  <path d="M12 17c0-2.5-2-4.5-5.5-4.5 0 3.5 2 5 5.5 4.5z" />
+                </svg>
+              ` : ''}
+              <span class="text-xs sm:text-sm font-bold ${statusTextColor}">
+                ${statusText}
+              </span>
+            </div>
+            <div class="w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center">
+              ${mascot.colored ? `
+                <img src="owl.png" alt="Gemacht" class="w-10 h-10 sm:w-11 sm:h-11 object-contain select-none transform transition-transform group-hover:scale-110">
               ` : `
-                <svg viewBox="0 0 100 100" class="w-9 h-9 text-slate-300 stroke-current fill-none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <svg viewBox="0 0 100 100" class="w-10 h-10 sm:w-11 sm:h-11 text-slate-300 stroke-current fill-none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M 28 30 C 20 18, 18 16, 32 18 C 40 20, 60 20, 68 18 C 82 16, 80 18, 72 30 C 86 44, 88 74, 78 86 C 70 94, 30 94, 22 86 C 12 74, 14 44, 28 30 Z" />
                   <circle cx="36" cy="42" r="14" />
                   <circle cx="64" cy="42" r="14" />
@@ -163,7 +183,7 @@ export class TrackerView {
                   <path d="M 35 91 Q 39 95 43 91" />
                   <path d="M 57 91 Q 61 95 65 91" />
                 </svg>
-              `)}
+              `}
             </div>
           </div>
         </button>
@@ -177,61 +197,44 @@ export class TrackerView {
   /**
    * Rendert die 7 Tage im responsiven Raster (4x2 auf dem Smartphone, 7 Spalten auf dem Desktop).
    */
-  renderGrid(weekDates, getDayStatusFn, completedCount) {
-    let html = '<div class="grid grid-cols-4 sm:grid-cols-7 gap-2 sm:gap-2.5">';
+  renderGrid(weekDates, getMascotStatusFn, completedCount) {
+    let html = '<div class="grid grid-cols-4 sm:grid-cols-7 gap-2.5 sm:gap-3.5">';
 
     weekDates.forEach((dateStr) => {
-      const status = getDayStatusFn(dateStr);
+      const mascot = getMascotStatusFn ? getMascotStatusFn(dateStr) : { colored: false, hasFocus: false, hasCare: false, hasMicro: false };
       const dayInfo = DateHelper.formatDayInfo(dateStr);
 
       let tileBgClass = 'bg-white border-slate-100 hover:border-brand-200';
-      if (status === 'focus') {
+      if (mascot.colored) {
         tileBgClass = 'bg-surface-subtle border-brand-200 shadow-sm';
-      } else if (status === 'care') {
-        tileBgClass = 'bg-[#F1F6F2] border-[#C3D9C7] shadow-sm';
       }
 
       html += `
         <button 
           type="button"
           onclick="App.toggleTrackerDay('${dateStr}')"
-          class="group relative rounded-2xl p-2.5 sm:p-3 flex flex-col items-center justify-between text-center transition-all duration-200 border ${tileBgClass} ${dayInfo.isToday ? 'ring-2 ring-brand-500 ring-offset-1' : ''}"
+          class="group relative rounded-2xl sm:rounded-3xl p-3 sm:p-4 flex flex-col items-center justify-between text-center transition-all duration-200 border cursor-pointer ${tileBgClass} ${dayInfo.isToday ? 'ring-2 ring-brand-500 ring-offset-2' : ''} min-h-[125px] sm:min-h-[145px]"
         >
           <div class="space-y-0.5">
-            <span class="block text-xs font-bold ${dayInfo.isToday ? 'text-brand-700' : 'text-slate-600'}">
+            <span class="block text-xs sm:text-sm font-extrabold ${dayInfo.isToday ? 'text-brand-700' : 'text-slate-600'}">
               ${dayInfo.weekday}
             </span>
-            <span class="block text-[11px] font-medium text-slate-400">
+            <span class="block text-[11px] sm:text-xs font-semibold text-slate-400">
               ${dayInfo.dayNumber}.
             </span>
           </div>
 
-          <div class="my-2 sm:my-3 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center">
-            ${status === 'focus' ? `
+          <div class="my-2 sm:my-3 w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 flex items-center justify-center">
+            ${mascot.colored ? `
               <img 
                 src="owl.png" 
                 alt="Gemacht" 
                 class="w-full h-full object-contain select-none transform transition-transform group-hover:scale-110"
               >
-            ` : (status === 'care' ? `
-              <div class="relative w-full h-full flex items-center justify-center">
-                <img 
-                  src="owl.png" 
-                  alt="Etwas anderes gemacht" 
-                  class="w-full h-full object-contain select-none transform transition-transform group-hover:scale-110"
-                >
-                <div class="absolute -top-1.5 -right-1.5 w-4 h-4 sm:w-5 sm:h-5 drop-shadow-sm">
-                  <svg viewBox="0 0 100 100" fill="none" class="w-full h-full overflow-visible">
-                    <path d="M 22 20 C 44 10, 74 22, 88 48 C 96 64, 88 82, 74 85 C 50 90, 26 70, 22 20 Z" fill="#52C439" stroke="#18181B" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>
-                    <path d="M 25 22 C 42 15, 68 24, 82 46 C 74 38, 48 24, 25 22 Z" fill="#98EB72"/>
-                    <path d="M 92 98 C 88 88, 80 80, 74 72 C 64 58, 52 46, 40 34" fill="none" stroke="#18181B" stroke-width="8" stroke-linecap="round"/>
-                  </svg>
-                </div>
-              </div>
             ` : `
               <svg 
                 viewBox="0 0 100 100" 
-                class="w-8 h-8 sm:w-11 sm:h-11 text-slate-300 group-hover:text-brand-400 stroke-current fill-none transition-colors" 
+                class="w-10 h-10 sm:w-12 sm:h-12 text-slate-300 group-hover:text-brand-400 stroke-current fill-none transition-colors" 
                 stroke-width="3" 
                 stroke-linecap="round" 
                 stroke-linejoin="round" 
@@ -249,29 +252,35 @@ export class TrackerView {
                 <path d="M 35 91 Q 39 95 43 91" />
                 <path d="M 57 91 Q 61 95 65 91" />
               </svg>
-            `)}
+            `}
           </div>
 
-          <div>
+          <div class="flex items-center justify-center gap-1.5 min-h-[22px]">
             ${dayInfo.isToday ? `
-              <span class="inline-block px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-brand-100 text-brand-700">
+              <span class="inline-block px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-brand-100 text-brand-700">
                 Heute
               </span>
-            ` : (status === 'focus' ? `
-              <svg class="w-3 h-3 text-brand-600 inline" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            ` : ''}
+            ${mascot.hasFocus ? `
+              <svg class="w-4 h-4 text-brand-600 inline shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" title="Fokus geschafft">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
               </svg>
-            ` : (status === 'care' ? `
-              <div class="inline-flex items-center gap-0.5 text-[#3E7329]">
-                <div class="w-3 h-3 inline-block">
-                  <svg viewBox="0 0 100 100" fill="none" class="w-full h-full overflow-visible">
-                    <path d="M 22 20 C 44 10, 74 22, 88 48 C 96 64, 88 82, 74 85 C 50 90, 26 70, 22 20 Z" fill="#52C439" stroke="#18181B" stroke-width="9"/>
-                  </svg>
-                </div>
-              </div>
-            ` : `
-              <span class="inline-block text-[10px] font-medium text-slate-400">—</span>
-            `))}
+            ` : ''}
+            ${mascot.hasCare ? `
+              <svg class="w-4 h-4 text-brand-600 inline shrink-0" fill="currentColor" viewBox="0 0 24 24" title="Etwas anderes getan, was mir gut getan hat">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+              </svg>
+            ` : ''}
+            ${mascot.hasMicro ? `
+              <svg class="w-4 h-4 text-brand-600 inline shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" title="Mikrohabit geschafft">
+                <path d="M12 22v-9" />
+                <path d="M12 13c0-3.5 2.5-6 7-6 0 4.5-2.5 7-7 6z" />
+                <path d="M12 17c0-2.5-2-4.5-5.5-4.5 0 3.5 2 5 5.5 4.5z" />
+              </svg>
+            ` : ''}
+            ${!dayInfo.isToday && !mascot.hasFocus && !mascot.hasCare && !mascot.hasMicro ? `
+              <span class="inline-block text-xs font-semibold text-slate-300">—</span>
+            ` : ''}
           </div>
         </button>
       `;
@@ -279,10 +288,10 @@ export class TrackerView {
 
     // 8. Kachel auf Smartphones für perfekte Symmetrie im 4x2-Raster
     html += `
-      <div class="sm:hidden rounded-2xl p-2.5 bg-surface-subtle border border-surface-border flex flex-col items-center justify-center text-center">
-        <span class="text-[10px] font-bold text-slate-500">Gemacht</span>
-        <span class="text-base font-black text-brand-700 my-1">${completedCount} / 7</span>
-        <span class="text-[9px] text-slate-400">Tage</span>
+      <div class="sm:hidden rounded-2xl sm:rounded-3xl p-3 bg-surface-subtle border border-surface-border flex flex-col items-center justify-center text-center min-h-[125px]">
+        <span class="text-xs font-bold text-slate-500">Gemacht</span>
+        <span class="text-lg font-black text-brand-700 my-1">${completedCount} / 7</span>
+        <span class="text-[10px] font-semibold text-slate-400">Tage</span>
       </div>
     `;
 

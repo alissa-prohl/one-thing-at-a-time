@@ -17,12 +17,14 @@ export class WeekTracker {
    * @param {string[]} [params.completedDates] - Array mit Daten, an denen der Fokus gemacht wurde
    * @param {string[]} [params.careDates] - Array mit Daten, an denen etwas Anderes gutgetan hat
    * @param {string} [params.viewMode] - 'grid' oder 'list'
+   * @param {object} [params.completedMicrohabitDates] - Map: dateStr -> Array von erledigten Mikrohabit-IDs
    */
-  constructor({ startDate, completedDates, careDates, viewMode } = {}) {
+  constructor({ startDate, completedDates, careDates, viewMode, completedMicrohabitDates } = {}) {
     this.startDate = startDate || DateHelper.getTodayISO();
     this.completedDates = Array.isArray(completedDates) ? [...completedDates] : [];
     this.careDates = Array.isArray(careDates) ? [...careDates] : [];
     this.viewMode = viewMode === 'list' ? 'list' : 'grid';
+    this.completedMicrohabitDates = (completedMicrohabitDates && typeof completedMicrohabitDates === 'object') ? { ...completedMicrohabitDates } : {};
   }
 
   /**
@@ -148,14 +150,89 @@ export class WeekTracker {
   }
 
   /**
-   * Zählt alle positiven Tage der aktuellen 7 Tage (Fokus + Selbstfürsorge).
-   * Beide zählen für das persönliche Wohlbefinden.
+   * Prüft, ob eine bestimmte Mikrohabit an einem Datum erledigt wurde.
+   * @param {string} dateStr
+   * @param {string} ideaId
+   * @returns {boolean}
+   */
+  isMicrohabitCompleted(dateStr, ideaId) {
+    const list = this.completedMicrohabitDates[dateStr];
+    return Array.isArray(list) && list.includes(ideaId);
+  }
+
+  /**
+   * Schaltet den Erledigt-Status einer bestimmten Mikrohabit für ein Datum um.
+   * @param {string} dateStr
+   * @param {string} ideaId
+   * @returns {boolean} Neuer Zustand (true = erledigt, false = offen)
+   */
+  toggleMicrohabitDate(dateStr, ideaId) {
+    if (!this.completedMicrohabitDates[dateStr]) {
+      this.completedMicrohabitDates[dateStr] = [];
+    }
+    const index = this.completedMicrohabitDates[dateStr].indexOf(ideaId);
+    if (index > -1) {
+      this.completedMicrohabitDates[dateStr].splice(index, 1);
+      return false;
+    } else {
+      this.completedMicrohabitDates[dateStr].push(ideaId);
+      return true;
+    }
+  }
+
+  /**
+   * Prüft, ob an einem Tag die aktiven Mikrohabits erledigt wurden.
+   * Wenn aktive Mikrohabits vorhanden sind, müssen alle aktiven erledigt sein.
+   * @param {string} dateStr
+   * @param {string[]} activeMicrohabitIds
+   * @returns {boolean}
+   */
+  hasMicrohabitsCompleted(dateStr, activeMicrohabitIds = []) {
+    if (!activeMicrohabitIds || activeMicrohabitIds.length === 0) {
+      // Falls keine spezifischen IDs übergeben wurden, prüfen ob überhaupt eine Habit an dem Tag eingetragen ist
+      const list = this.completedMicrohabitDates[dateStr];
+      return Array.isArray(list) && list.length > 0;
+    }
+    return activeMicrohabitIds.every((id) => this.isMicrohabitCompleted(dateStr, id));
+  }
+
+  /**
+   * Berechnet das Erscheinungsbild des Eulen-Maskottchens nach der Nutzer-Vorgabe:
+   * - Vollfarbige Eule: Bei Fokus ODER "Etwas anderes getan" ODER Mikrohabit
+   * - Grau/ruhend: Wenn an dem Tag gar nichts eingetragen ist
+   *
+   * @param {string} dateStr
+   * @param {string[]} activeMicrohabitIds
+   * @returns {{ colored: boolean, hasMain: boolean, hasMicro: boolean, plant: boolean, leaf: boolean }}
+   */
+  getMascotStatus(dateStr, activeMicrohabitIds = []) {
+    const hasFocus = this.isDateCompleted(dateStr);
+    const hasCare = this.isDateCare(dateStr);
+    const hasMain = hasFocus || hasCare;
+    const hasMicro = this.hasMicrohabitsCompleted(dateStr, activeMicrohabitIds);
+
+    return {
+      colored: hasMain || hasMicro,
+      hasFocus,
+      hasCare,
+      hasMain,
+      hasMicro,
+      plant: hasMicro,
+      leaf: hasMicro
+    };
+  }
+
+  /**
+   * Zählt alle positiven Tage der aktuellen 7 Tage (Fokus, Selbstfürsorge oder Mikrohabit).
+   * @param {string[]} [activeMicrohabitIds]
    * @returns {number}
    */
-  getCompletedCountForCurrentWeek() {
+  getCompletedCountForCurrentWeek(activeMicrohabitIds = []) {
     const weekDates = this.getWeekDates();
     return weekDates.reduce((count, dateStr) => {
-      const isPositive = this.isDateCompleted(dateStr) || this.isDateCare(dateStr);
+      const isPositive = this.isDateCompleted(dateStr) || 
+                         this.isDateCare(dateStr) || 
+                         this.hasMicrohabitsCompleted(dateStr, activeMicrohabitIds);
       return count + (isPositive ? 1 : 0);
     }, 0);
   }
@@ -177,7 +254,8 @@ export class WeekTracker {
       startDate: this.startDate,
       completedDates: this.completedDates,
       careDates: this.careDates,
-      viewMode: this.viewMode
+      viewMode: this.viewMode,
+      completedMicrohabitDates: this.completedMicrohabitDates
     };
   }
 }

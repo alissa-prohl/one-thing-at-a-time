@@ -13,13 +13,15 @@ export class Idea {
    * @param {string} [params.what] - Ausführlichere Beschreibung: "Was genau?"
    * @param {string} [params.why] - Motivation: "Warum?"
    * @param {string} [params.createdAt] - Erstellungszeitpunkt als ISO-String
+   * @param {boolean} [params.isMicrohabit] - Ob die Idee als Mikrohabit gewählt ist
    */
-  constructor({ id, title, what, why, createdAt } = {}) {
+  constructor({ id, title, what, why, createdAt, isMicrohabit } = {}) {
     this.id = id || 'idea-' + Date.now();
     this.title = (title || '').trim();
     this.what = (what || this.title).trim();
     this.why = (why || '').trim();
     this.createdAt = createdAt || new Date().toISOString();
+    this.isMicrohabit = Boolean(isMicrohabit);
   }
 
   /**
@@ -47,7 +49,8 @@ export class Idea {
       title: this.title,
       what: this.what,
       why: this.why,
-      createdAt: this.createdAt
+      createdAt: this.createdAt,
+      isMicrohabit: this.isMicrohabit
     };
   }
 
@@ -62,7 +65,8 @@ export class Idea {
       title: json.title,
       what: json.what,
       why: json.why,
-      createdAt: json.createdAt
+      createdAt: json.createdAt,
+      isMicrohabit: json.isMicrohabit
     });
   }
 }

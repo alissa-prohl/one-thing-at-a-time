@@ -1,11 +1,11 @@
-import { Idea } from './models/Idea.js?v=2';
-import { WeekTracker } from './models/WeekTracker.js?v=2';
-import { DateHelper } from './services/DateHelper.js?v=2';
-import { StorageService } from './services/StorageService.js?v=2';
-import { HomeView } from './views/HomeView.js?v=2';
-import { ParkingView } from './views/ParkingView.js?v=2';
-import { TrackerView } from './views/TrackerView.js?v=2';
-import { ModalManager } from './views/ModalManager.js?v=2';
+import { Idea } from './models/Idea.js?v=10';
+import { WeekTracker } from './models/WeekTracker.js?v=10';
+import { DateHelper } from './services/DateHelper.js?v=10';
+import { StorageService } from './services/StorageService.js?v=10';
+import { HomeView } from './views/HomeView.js?v=10';
+import { ParkingView } from './views/ParkingView.js?v=10';
+import { TrackerView } from './views/TrackerView.js?v=10';
+import { ModalManager } from './views/ModalManager.js?v=10';
 
 /**
  * App (Haupt-Controller)
@@ -18,6 +18,7 @@ class AppController {
   constructor() {
     this.currentView = 'home';
     this.activeFocusId = null;
+    this.activeMicrohabitIds = [];
     this.ideas = [];
     this.weekTracker = null;
     this.calendarViewDate = new Date();
@@ -52,11 +53,20 @@ class AppController {
     this.activeFocusId = saved.activeFocusId;
     this.ideas = saved.ideas.map((raw) => Idea.fromJSON(raw));
 
+    const savedMicroIds = Array.isArray(saved.activeMicrohabitIds) ? saved.activeMicrohabitIds : [];
+    this.ideas.forEach((idea) => {
+      if (savedMicroIds.includes(idea.id)) {
+        idea.isMicrohabit = true;
+      }
+    });
+    this.activeMicrohabitIds = this.ideas.filter((i) => i.isMicrohabit).map((i) => i.id);
+
     this.weekTracker = new WeekTracker({
       startDate: saved.weekStartDate,
       completedDates: saved.completedDates,
       careDates: saved.careDates,
-      viewMode: saved.trackerViewMode
+      viewMode: saved.trackerViewMode,
+      completedMicrohabitDates: saved.completedMicrohabitDates
     });
   }
 
@@ -70,7 +80,9 @@ class AppController {
       completedDates: this.weekTracker.completedDates,
       careDates: this.weekTracker.careDates,
       ideas: this.ideas.map((idea) => idea.toJSON()),
-      trackerViewMode: this.weekTracker.viewMode
+      trackerViewMode: this.weekTracker.viewMode,
+      activeMicrohabitIds: this.activeMicrohabitIds,
+      completedMicrohabitDates: this.weekTracker.completedMicrohabitDates
     });
   }
 
@@ -84,28 +96,39 @@ class AppController {
   }
 
   /**
+   * Gibt alle aktiven Mikrohabits als Idea-Array zurück.
+   * @returns {Idea[]}
+   */
+  getActiveMicrohabits() {
+    return this.ideas.filter((idea) => this.activeMicrohabitIds.includes(idea.id));
+  }
+
+  /**
    * Aktualisiert alle Views der Anwendung.
    */
   renderAll() {
     const activeIdea = this.getActiveFocusIdea();
+    const activeMicrohabits = this.getActiveMicrohabits();
     const today = DateHelper.getTodayISO();
     const todayStatus = this.weekTracker.getDayStatus(today);
 
-    // 1. Startseite (Eule, Spruch, Fokus- & Care-Button)
+    // 1. Startseite (Mikrohabits über Eule, Eule, Spruch, Fokus- & Care-Button)
     this.homeView.render({
       activeIdea,
-      todayStatus
+      todayStatus,
+      activeMicrohabits,
+      isMicrohabitCompletedFn: (ideaId) => this.weekTracker.isMicrohabitCompleted(today, ideaId)
     });
 
     // 2. Gedanken-Parkplatz
-    this.parkingView.render(this.ideas, this.activeFocusId);
+    this.parkingView.render(this.ideas, this.activeFocusId, this.activeMicrohabitIds);
 
     // 3. Wochen-Tracker
     this.trackerView.render({
       activeIdea,
       weekDates: this.weekTracker.getWeekDates(),
-      getDayStatusFn: (dateStr) => this.weekTracker.getDayStatus(dateStr),
-      completedCount: this.weekTracker.getCompletedCountForCurrentWeek(),
+      getMascotStatusFn: (dateStr) => this.weekTracker.getMascotStatus(dateStr, this.activeMicrohabitIds),
+      completedCount: this.weekTracker.getCompletedCountForCurrentWeek(this.activeMicrohabitIds),
       viewMode: this.weekTracker.viewMode
     });
   }
@@ -196,19 +219,56 @@ class AppController {
 
   /**
    * Klick auf einen beliebigen Tag im Tracker.
-   * Schaltet durch die Zustände: Offen -> Fokus gemacht -> Etwas anderes gut getan -> Offen.
+   * Schaltet intuitiv durch die Zustände: Offen -> Gemacht -> Gemacht + Mikrohabit -> Offen.
    * @param {string} dateStr - Datum als "YYYY-MM-DD"
    */
   toggleTrackerDay(dateStr) {
-    const currentStatus = this.weekTracker.getDayStatus(dateStr);
-    if (currentStatus === 'open') {
+    const hasFocus = this.weekTracker.isDateCompleted(dateStr);
+    const hasCare = this.weekTracker.isDateCare(dateStr);
+    const hasMicro = this.weekTracker.hasMicrohabitsCompleted(dateStr, this.activeMicrohabitIds);
+    const hasActiveMicros = this.activeMicrohabitIds.length > 0;
+
+    if (!hasFocus && !hasCare && !hasMicro) {
+      // 1. Offen -> Fokus gemacht
       this.weekTracker.toggleFocusDate(dateStr);
-    } else if (currentStatus === 'focus') {
+    } else if (hasFocus && !hasMicro && hasActiveMicros) {
+      // 2. Fokus -> Fokus + Mikrohabits
+      this.activeMicrohabitIds.forEach((id) => {
+        if (!this.weekTracker.isMicrohabitCompleted(dateStr, id)) {
+          this.weekTracker.toggleMicrohabitDate(dateStr, id);
+        }
+      });
+    } else if (hasFocus) {
+      // 3. Fokus -> Etwas anderes getan
+      if (hasMicro) {
+        this.activeMicrohabitIds.forEach((id) => {
+          if (this.weekTracker.isMicrohabitCompleted(dateStr, id)) {
+            this.weekTracker.toggleMicrohabitDate(dateStr, id);
+          }
+        });
+      }
       this.weekTracker.toggleCareDate(dateStr);
+    } else if (hasCare && !hasMicro && hasActiveMicros) {
+      // 4. Care -> Care + Mikrohabits
+      this.activeMicrohabitIds.forEach((id) => {
+        if (!this.weekTracker.isMicrohabitCompleted(dateStr, id)) {
+          this.weekTracker.toggleMicrohabitDate(dateStr, id);
+        }
+      });
     } else {
-      // War 'care', jetzt wieder auf 'open'
-      this.weekTracker.toggleCareDate(dateStr);
+      // 5. Zurück auf Offen
+      if (hasCare) {
+        this.weekTracker.toggleCareDate(dateStr);
+      }
+      if (hasMicro) {
+        this.activeMicrohabitIds.forEach((id) => {
+          if (this.weekTracker.isMicrohabitCompleted(dateStr, id)) {
+            this.weekTracker.toggleMicrohabitDate(dateStr, id);
+          }
+        });
+      }
     }
+
     this.saveState();
     this.renderAll();
   }
@@ -253,8 +313,8 @@ class AppController {
     this.trackerView.render({
       activeIdea: this.getActiveFocusIdea(),
       weekDates: this.weekTracker.getWeekDates(),
-      getDayStatusFn: (dateStr) => this.weekTracker.getDayStatus(dateStr),
-      completedCount: this.weekTracker.getCompletedCountForCurrentWeek(),
+      getMascotStatusFn: (dateStr) => this.weekTracker.getMascotStatus(dateStr, this.activeMicrohabitIds),
+      completedCount: this.weekTracker.getCompletedCountForCurrentWeek(this.activeMicrohabitIds),
       viewMode: this.weekTracker.viewMode
     });
   }
@@ -317,6 +377,39 @@ class AppController {
     this.renderAll();
   }
 
+  /**
+   * Direktes Umschalten als Mikrohabit (beliebig viele wählbar).
+   * @param {string} ideaId
+   */
+  toggleIdeaMicrohabitDirect(ideaId) {
+    const idea = this.ideas.find((i) => i.id === ideaId);
+    if (!idea) return;
+
+    idea.isMicrohabit = !idea.isMicrohabit;
+    if (idea.isMicrohabit) {
+      if (!this.activeMicrohabitIds.includes(ideaId)) {
+        this.activeMicrohabitIds.push(ideaId);
+      }
+    } else {
+      this.activeMicrohabitIds = this.activeMicrohabitIds.filter((id) => id !== ideaId);
+    }
+
+    this.saveState();
+    this.renderAll();
+  }
+
+  /**
+   * Toggelt eine Mikrohabit für das heutige Datum (Startseiten-Interaktion).
+   * Färbt den Container lila bzw. wieder weiß.
+   * @param {string} ideaId
+   */
+  toggleMicrohabitToday(ideaId) {
+    const today = DateHelper.getTodayISO();
+    this.weekTracker.toggleMicrohabitDate(today, ideaId);
+    this.saveState();
+    this.renderAll();
+  }
+
   // =============================================================
   // DETAIL-MODAL & LÖSCH-BESTÄTIGUNG
   // =============================================================
@@ -327,8 +420,9 @@ class AppController {
 
     this.currentEditingIdeaId = ideaId;
     const isActive = (this.activeFocusId === ideaId);
+    const isMicrohabit = Boolean(idea.isMicrohabit || this.activeMicrohabitIds.includes(ideaId));
 
-    this.modalManager.openIdeaModal(idea, isActive);
+    this.modalManager.openIdeaModal(idea, isActive, isMicrohabit);
   }
 
   closeModal() {
@@ -348,6 +442,16 @@ class AppController {
     this.saveState();
     this.modalManager.updateModalFocusButton(this.activeFocusId === this.currentEditingIdeaId);
     this.renderAll();
+  }
+
+  toggleModalMicrohabit() {
+    if (!this.currentEditingIdeaId) return;
+
+    this.toggleIdeaMicrohabitDirect(this.currentEditingIdeaId);
+    const idea = this.ideas.find((i) => i.id === this.currentEditingIdeaId);
+    if (idea) {
+      this.modalManager.updateModalMicrohabitButton(idea.isMicrohabit);
+    }
   }
 
   saveModalIdea(event) {
@@ -381,6 +485,7 @@ class AppController {
     if (this.activeFocusId === this.currentEditingIdeaId) {
       this.activeFocusId = null;
     }
+    this.activeMicrohabitIds = this.activeMicrohabitIds.filter((id) => id !== this.currentEditingIdeaId);
 
     this.ideas = this.ideas.filter((i) => i.id !== this.currentEditingIdeaId);
     this.saveState();

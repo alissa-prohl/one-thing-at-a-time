@@ -18,11 +18,21 @@
 html, body {
   touch-action: manipulation;
   -webkit-text-size-adjust: 100%;
+  min-height: 100%;
+  min-height: 100dvh;
 }
 
 input, textarea, select {
   font-size: 16px !important;
   -webkit-text-size-adjust: 100%;
+}
+
+/* 
+ * Weicher Übergang für den Mikrohabit-Container beim Antippen
+ */
+.microhabit-pill {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* 
@@ -61,21 +71,4 @@ input, textarea, select {
 
 .animate-gentle-float {
   animation: gentleFloat 3.8s ease-in-out infinite;
-}
-
-/* 
- * Sanfter Lichtschein und Übergänge für das Eulen-Blatt (Selbstfürsorge)
- */
-.owl-care-glow {
-  filter: drop-shadow(0 6px 22px rgba(107, 142, 109, 0.32));
-}
-
-.owl-leaf-visible {
-  opacity: 1 !important;
-  transform: scale(1) rotate(0deg) !important;
-}
-
-.owl-leaf-hidden {
-  opacity: 0 !important;
-  transform: scale(0.65) rotate(-15deg) !important;
 }

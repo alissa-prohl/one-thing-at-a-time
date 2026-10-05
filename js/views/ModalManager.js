@@ -20,6 +20,8 @@ export class ModalManager {
     this.whyInput = document.getElementById('modal-input-why');
     this.focusBtn = document.getElementById('btn-modal-toggle-focus');
     this.focusBtnText = document.getElementById('modal-focus-btn-text');
+    this.microhabitBtn = document.getElementById('btn-modal-toggle-microhabit');
+    this.microhabitBtnText = document.getElementById('modal-microhabit-btn-text');
 
     // 2. Lösch-Bestätigung
     this.deleteModal = document.getElementById('modal-confirm-delete');
@@ -80,7 +82,7 @@ export class ModalManager {
 
   // --- Ideen-Bearbeiten-Modal ---
 
-  openIdeaModal(idea, isActiveFocus) {
+  openIdeaModal(idea, isActiveFocus, isMicrohabit) {
     if (!this.ideaModal || !idea) return;
 
     if (this.ideaIdInput) this.ideaIdInput.value = idea.id;
@@ -88,6 +90,7 @@ export class ModalManager {
     if (this.whyInput) this.whyInput.value = idea.why || '';
 
     this.updateModalFocusButton(isActiveFocus);
+    this.updateModalMicrohabitButton(isMicrohabit);
     this.ideaModal.classList.remove('hidden');
   }
 
@@ -98,14 +101,46 @@ export class ModalManager {
   }
 
   updateModalFocusButton(isActiveFocus) {
-    if (!this.focusBtn || !this.focusBtnText) return;
+    if (!this.focusBtn) return;
 
     if (isActiveFocus) {
-      this.focusBtnText.textContent = 'Wochenfokus beenden';
-      this.focusBtn.className = 'w-full py-3 px-4 rounded-2xl font-bold text-sm transition-all duration-200 flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700';
+      this.focusBtn.className = 'w-full py-3.5 px-5 rounded-2xl font-bold text-xs sm:text-sm transition-all duration-200 flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 text-white shadow-pill active:scale-95 cursor-pointer';
+      this.focusBtn.innerHTML = `
+        <svg class="w-4 h-4 sm:w-5 sm:h-5 text-white shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+        </svg>
+        <span id="modal-focus-btn-text">Aktiver Wochenfokus (Tippen zum Beenden)</span>
+      `;
     } else {
-      this.focusBtnText.textContent = 'Als Wochenfokus wählen';
-      this.focusBtn.className = 'w-full py-3 px-4 rounded-2xl font-bold text-sm transition-all duration-200 flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 text-white shadow-pill';
+      this.focusBtn.className = 'w-full py-3.5 px-5 rounded-2xl font-bold text-xs sm:text-sm transition-all duration-200 flex items-center justify-center gap-2 bg-surface-subtle hover:bg-brand-100 text-brand-700 border border-surface-border shadow-sm active:scale-95 cursor-pointer';
+      this.focusBtn.innerHTML = `
+        <svg class="w-4 h-4 sm:w-5 sm:h-5 text-brand-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+        </svg>
+        <span id="modal-focus-btn-text">Als Wochenfokus wählen</span>
+      `;
+    }
+  }
+
+  updateModalMicrohabitButton(isMicrohabit) {
+    if (!this.microhabitBtn) return;
+
+    if (isMicrohabit) {
+      this.microhabitBtn.className = 'w-full py-3.5 px-5 rounded-2xl font-bold text-xs sm:text-sm transition-all duration-200 flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 text-white shadow-pill active:scale-95 cursor-pointer';
+      this.microhabitBtn.innerHTML = `
+        <svg class="w-4 h-4 sm:w-5 sm:h-5 text-white shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+        </svg>
+        <span id="modal-microhabit-btn-text">Als Mikrohabit aktiv (Tippen zum Entfernen)</span>
+      `;
+    } else {
+      this.microhabitBtn.className = 'w-full py-3.5 px-5 rounded-2xl font-bold text-xs sm:text-sm transition-all duration-200 flex items-center justify-center gap-2 bg-surface-subtle hover:bg-brand-100 text-brand-700 border border-surface-border shadow-sm active:scale-95 cursor-pointer';
+      this.microhabitBtn.innerHTML = `
+        <svg class="w-4 h-4 sm:w-5 sm:h-5 text-brand-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+        </svg>
+        <span id="modal-microhabit-btn-text">Als Mikrohabit hinzufügen</span>
+      `;
     }
   }
 
