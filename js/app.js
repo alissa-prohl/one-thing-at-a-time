@@ -1,11 +1,11 @@
-import { Idea } from './models/Idea.js?v=10';
-import { WeekTracker } from './models/WeekTracker.js?v=10';
-import { DateHelper } from './services/DateHelper.js?v=10';
-import { StorageService } from './services/StorageService.js?v=10';
-import { HomeView } from './views/HomeView.js?v=10';
-import { ParkingView } from './views/ParkingView.js?v=10';
-import { TrackerView } from './views/TrackerView.js?v=10';
-import { ModalManager } from './views/ModalManager.js?v=10';
+import { Idea } from './models/Idea.js?v=12';
+import { WeekTracker } from './models/WeekTracker.js?v=12';
+import { DateHelper } from './services/DateHelper.js?v=12';
+import { StorageService } from './services/StorageService.js?v=12';
+import { HomeView } from './views/HomeView.js?v=12';
+import { ParkingView } from './views/ParkingView.js?v=12';
+import { TrackerView } from './views/TrackerView.js?v=12';
+import { ModalManager } from './views/ModalManager.js?v=12';
 
 /**
  * App (Haupt-Controller)
@@ -23,6 +23,7 @@ class AppController {
     this.weekTracker = null;
     this.calendarViewDate = new Date();
     this.currentEditingIdeaId = null;
+    this.pendingFocusIdeaId = null;
 
     // View-Instanzen
     this.homeView = null;
@@ -219,54 +220,18 @@ class AppController {
 
   /**
    * Klick auf einen beliebigen Tag im Tracker.
-   * Schaltet intuitiv durch die Zustände: Offen -> Gemacht -> Gemacht + Mikrohabit -> Offen.
+   * Wenn an dem Tag bereits etwas eingetragen ist (Fokus, Gut getan oder Mikrohabit),
+   * wird es mit einem einzigen Tipp komplett rückgängig gemacht ("Offen").
+   * Ist der Tag noch offen, wird der Wochenfokus für diesen Tag eingetragen.
    * @param {string} dateStr - Datum als "YYYY-MM-DD"
    */
   toggleTrackerDay(dateStr) {
-    const hasFocus = this.weekTracker.isDateCompleted(dateStr);
-    const hasCare = this.weekTracker.isDateCare(dateStr);
-    const hasMicro = this.weekTracker.hasMicrohabitsCompleted(dateStr, this.activeMicrohabitIds);
-    const hasActiveMicros = this.activeMicrohabitIds.length > 0;
+    const isAnyMarked = this.weekTracker.hasAnyCompleted(dateStr);
 
-    if (!hasFocus && !hasCare && !hasMicro) {
-      // 1. Offen -> Fokus gemacht
-      this.weekTracker.toggleFocusDate(dateStr);
-    } else if (hasFocus && !hasMicro && hasActiveMicros) {
-      // 2. Fokus -> Fokus + Mikrohabits
-      this.activeMicrohabitIds.forEach((id) => {
-        if (!this.weekTracker.isMicrohabitCompleted(dateStr, id)) {
-          this.weekTracker.toggleMicrohabitDate(dateStr, id);
-        }
-      });
-    } else if (hasFocus) {
-      // 3. Fokus -> Etwas anderes getan
-      if (hasMicro) {
-        this.activeMicrohabitIds.forEach((id) => {
-          if (this.weekTracker.isMicrohabitCompleted(dateStr, id)) {
-            this.weekTracker.toggleMicrohabitDate(dateStr, id);
-          }
-        });
-      }
-      this.weekTracker.toggleCareDate(dateStr);
-    } else if (hasCare && !hasMicro && hasActiveMicros) {
-      // 4. Care -> Care + Mikrohabits
-      this.activeMicrohabitIds.forEach((id) => {
-        if (!this.weekTracker.isMicrohabitCompleted(dateStr, id)) {
-          this.weekTracker.toggleMicrohabitDate(dateStr, id);
-        }
-      });
+    if (isAnyMarked) {
+      this.weekTracker.resetDate(dateStr);
     } else {
-      // 5. Zurück auf Offen
-      if (hasCare) {
-        this.weekTracker.toggleCareDate(dateStr);
-      }
-      if (hasMicro) {
-        this.activeMicrohabitIds.forEach((id) => {
-          if (this.weekTracker.isMicrohabitCompleted(dateStr, id)) {
-            this.weekTracker.toggleMicrohabitDate(dateStr, id);
-          }
-        });
-      }
+      this.weekTracker.toggleFocusDate(dateStr);
     }
 
     this.saveState();
@@ -433,15 +398,39 @@ class AppController {
   toggleModalFocus() {
     if (!this.currentEditingIdeaId) return;
 
+    // 1. Wenn diese Idee bereits der Fokus ist -> Einfach beenden
     if (this.activeFocusId === this.currentEditingIdeaId) {
       this.activeFocusId = null;
-    } else {
-      this.activeFocusId = this.currentEditingIdeaId;
+      this.saveState();
+      this.modalManager.updateModalFocusButton(false);
+      this.renderAll();
+      return;
     }
 
+    // 2. Es soll ein neuer Fokus gesetzt werden -> Vorher fragen, damit kein versehentliches Überschreiben passiert
+    const newIdea = this.ideas.find((i) => i.id === this.currentEditingIdeaId);
+    if (!newIdea) return;
+
+    const oldIdea = this.getActiveFocusIdea();
+    this.pendingFocusIdeaId = this.currentEditingIdeaId;
+    this.modalManager.openFocusConfirm(oldIdea ? oldIdea.title : null, newIdea.title);
+  }
+
+  confirmSetNewFocus() {
+    if (!this.pendingFocusIdeaId) return;
+
+    this.activeFocusId = this.pendingFocusIdeaId;
+    this.pendingFocusIdeaId = null;
+
     this.saveState();
+    this.modalManager.closeFocusConfirm();
     this.modalManager.updateModalFocusButton(this.activeFocusId === this.currentEditingIdeaId);
     this.renderAll();
+  }
+
+  cancelFocusConfirm() {
+    this.pendingFocusIdeaId = null;
+    this.modalManager.closeFocusConfirm();
   }
 
   toggleModalMicrohabit() {

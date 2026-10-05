@@ -1,4 +1,4 @@
-import { DateHelper } from '../services/DateHelper.js?v=10';
+import { DateHelper } from '../services/DateHelper.js?v=12';
 
 /**
  * TrackerView
@@ -120,6 +120,7 @@ export class TrackerView {
         <button 
           type="button"
           onclick="App.toggleTrackerDay('${dateStr}')"
+          title="${mascot.colored ? 'Antippen zum Zurücksetzen' : 'Antippen zum Eintragen'}"
           class="w-full rounded-2xl sm:rounded-3xl p-4 sm:p-5 flex items-center justify-between text-left transition-all duration-200 border cursor-pointer ${itemBgClass} ${dayInfo.isToday ? 'ring-2 ring-brand-500 ring-offset-2' : ''}"
         >
           <div class="flex items-center gap-3.5">
@@ -213,6 +214,7 @@ export class TrackerView {
         <button 
           type="button"
           onclick="App.toggleTrackerDay('${dateStr}')"
+          title="${mascot.colored ? 'Antippen zum Zurücksetzen' : 'Antippen zum Eintragen'}"
           class="group relative rounded-2xl sm:rounded-3xl p-3 sm:p-4 flex flex-col items-center justify-between text-center transition-all duration-200 border cursor-pointer ${tileBgClass} ${dayInfo.isToday ? 'ring-2 ring-brand-500 ring-offset-2' : ''} min-h-[125px] sm:min-h-[145px]"
         >
           <div class="space-y-0.5">

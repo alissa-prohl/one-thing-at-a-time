@@ -27,7 +27,12 @@ export class ModalManager {
     this.deleteModal = document.getElementById('modal-confirm-delete');
     this.deleteDialog = document.getElementById('modal-confirm-dialog');
 
-    // 3. Mini-Kalender
+    // 3. Wochenfokus-Bestätigung
+    this.focusConfirmModal = document.getElementById('modal-confirm-focus');
+    this.focusConfirmDialog = document.getElementById('modal-confirm-focus-dialog');
+    this.focusConfirmText = document.getElementById('modal-confirm-focus-text');
+
+    // 4. Mini-Kalender
     this.calendarModal = document.getElementById('modal-calendar');
     this.calendarDialog = document.getElementById('modal-calendar-dialog');
 
@@ -36,7 +41,7 @@ export class ModalManager {
   }
 
   /**
-   * Richtet einen Klick- und Markier-Schutz für alle drei Modale ein.
+   * Richtet einen Klick- und Markier-Schutz für alle Modale ein.
    * Ein Modal schließt sich nur dann beim Klick auf den Hintergrund, wenn
    * SOWOHL das Drücken (mousedown) ALS AUCH das Loslassen (mouseup) direkt
    * auf der abgedunkelten Fläche stattfanden.
@@ -44,6 +49,7 @@ export class ModalManager {
   setupBackdropProtection() {
     this.bindBackdropGuard(this.ideaModal, this.ideaDialog, () => this.closeIdeaModal());
     this.bindBackdropGuard(this.deleteModal, this.deleteDialog, () => this.closeDeleteConfirm());
+    this.bindBackdropGuard(this.focusConfirmModal, this.focusConfirmDialog, () => this.closeFocusConfirm());
     this.bindBackdropGuard(this.calendarModal, this.calendarDialog, () => this.closeCalendarModal());
   }
 
@@ -152,6 +158,28 @@ export class ModalManager {
     };
   }
 
+  // --- Wochenfokus-Bestätigung ---
+
+  openFocusConfirm(oldFocusTitle, newFocusTitle) {
+    if (!this.focusConfirmModal) return;
+
+    if (this.focusConfirmText) {
+      if (oldFocusTitle) {
+        this.focusConfirmText.textContent = `Du hast bereits „${oldFocusTitle}“ als Wochenfokus. Möchtest du ihn wirklich durch „${newFocusTitle}“ ersetzen?`;
+      } else {
+        this.focusConfirmText.textContent = `Möchtest du „${newFocusTitle}“ als deinen neuen Wochenfokus festlegen?`;
+      }
+    }
+
+    this.focusConfirmModal.classList.remove('hidden');
+  }
+
+  closeFocusConfirm() {
+    if (this.focusConfirmModal) {
+      this.focusConfirmModal.classList.add('hidden');
+    }
+  }
+
   // --- Lösch-Bestätigung ---
 
   openDeleteConfirm() {
@@ -181,6 +209,7 @@ export class ModalManager {
   }
 
   closeAll() {
+    this.closeFocusConfirm();
     this.closeDeleteConfirm();
     this.closeIdeaModal();
     this.closeCalendarModal();

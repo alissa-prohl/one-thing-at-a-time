@@ -1,4 +1,4 @@
-import { DateHelper } from '../services/DateHelper.js?v=2';
+import { DateHelper } from '../services/DateHelper.js?v=12';
 
 /**
  * WeekTracker Model
@@ -124,6 +124,37 @@ export class WeekTracker {
    */
   toggleDate(dateStr) {
     return this.toggleFocusDate(dateStr);
+  }
+
+  /**
+   * Prüft, ob an diesem Datum irgendeine Aktivität erfasst wurde (Fokus, Care oder Mikrohabit).
+   * @param {string} dateStr
+   * @returns {boolean}
+   */
+  hasAnyCompleted(dateStr) {
+    const hasFocus = this.isDateCompleted(dateStr);
+    const hasCare = this.isDateCare(dateStr);
+    const microList = this.completedMicrohabitDates[dateStr];
+    const hasMicro = Array.isArray(microList) && microList.length > 0;
+    return hasFocus || hasCare || hasMicro;
+  }
+
+  /**
+   * Setzt alle Markierungen (Fokus, Care, Mikrohabits) für ein Datum mit einem Schritt zurück ("Offen").
+   * @param {string} dateStr - Datum als "YYYY-MM-DD"
+   */
+  resetDate(dateStr) {
+    const focusIndex = this.completedDates.indexOf(dateStr);
+    if (focusIndex > -1) {
+      this.completedDates.splice(focusIndex, 1);
+    }
+    const careIndex = this.careDates.indexOf(dateStr);
+    if (careIndex > -1) {
+      this.careDates.splice(careIndex, 1);
+    }
+    if (this.completedMicrohabitDates && this.completedMicrohabitDates[dateStr]) {
+      delete this.completedMicrohabitDates[dateStr];
+    }
   }
 
   /**
